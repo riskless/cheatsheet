@@ -2,7 +2,7 @@
 - A data structure is a way to store and organize data in a computer, so that it can be used efficiently.
 - We talk about data structures as:
 	1. Mathematical/logical models or Abstract data types (ADT)
-	2. Implementation
+	1. Implementation
 - List (ADT)
   - Store a given number of elements of any type
   - Read elements by position
