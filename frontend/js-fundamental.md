@@ -1,4 +1,4 @@
-### Function statement
+### Function statement/declaration
 - Hoisting (O)
 ```javascript
 //function statement
@@ -15,6 +15,13 @@ var greet = function(name){
     console.log("Hello " + name + "!");
 };
 ```
+### IIFE (Immediately Invoked Function Expressions)
+```javascript
+(function(){
+    console.log("Hi!");
+})();
+```
+
 ### Singleton Design Pattern
 ```javascript
 var signupController = window.signupController || {};
