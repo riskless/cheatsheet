@@ -1,3 +1,20 @@
+### Function statement
+- Hoisting (O)
+```javascript
+//function statement
+console.log(sum(3,5));
+function sum(a, b){
+    return a + b;
+}
+```
+### Function expression 
+- Hoisting (X)
+```javascript
+//function expression
+var greet = function(name){
+    console.log("Hello " + name + "!");
+};
+```
 ### Singleton Design Pattern
 ```javascript
 var signupController = window.signupController || {};
