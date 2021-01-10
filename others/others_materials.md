@@ -3,6 +3,7 @@
 - We talk about data structures as:
 	1. Mathematical/logical models or Abstract data types (ADT)
 	1. Implementation
+- Abstract data types: Define data and operations, but no implementation.
 - List (ADT)
 	- Store a given number of elements of any type
  	- Specify data type
@@ -12,8 +13,6 @@
 	- Eempty list has size 0
 	- Count
   	- Concret Implementation: Arrays, Linked List, etc.
-- Abstract data types: Define data and operations, but no implementation.
-
 ### Arrays
 - Cost of operations
 	- Access: constant time, O(1)
