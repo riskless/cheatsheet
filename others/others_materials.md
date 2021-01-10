@@ -5,9 +5,25 @@
 	1. Implementation
 - List (ADT)
   - Store a given number of elements of any type
-  - Read elements by position
-  - Modify element at a position
-  - Arrays: Concret Implementation
+	- Specify data type
+  - Read elements at a position
+  - Write/Modify element at a position
+	- Remove
+	- Eempty list has size 0
+	- Count
+  - Concret Implementation: Arrays, Linked List, etc.
+- Abstract data types: Define data and operations, but no implementation.
+
+### Arrays
+- Cost of operations
+	- Access: constant time, O(1)
+
+### Linked list
+- head: address of the head node gives us access of the complete list
+- Cost of operations
+	- Access to elements: O(n)
+	- Insertion: O(n)
+	- Delete: O(n)
 
 # References
 1. [mycodeschool](https://www.youtube.com/user/mycodeschool/playlists "mycodeschool")
