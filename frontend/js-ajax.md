@@ -1,5 +1,5 @@
 
-### jQuery - $.ajax()
+### (jQuery) $.ajax()
 ```javascript
   $.ajax({
     url: "server_url",
