@@ -20,6 +20,10 @@ var greet = function(name){
 (function(){
     console.log("Hi!");
 })();
+
+(function(){
+    console.log("Hi!");
+}());
 ```
 
 ### Singleton Design Pattern
