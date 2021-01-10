@@ -4,14 +4,14 @@
 	1. Mathematical/logical models or Abstract data types (ADT)
 	1. Implementation
 - List (ADT)
-  - Store a given number of elements of any type
-	- Specify data type
-  - Read elements at a position
-  - Write/Modify element at a position
+	- Store a given number of elements of any type
+ 	- Specify data type
+  	- Read elements at a position
+  	- Write/Modify element at a position
 	- Remove
 	- Eempty list has size 0
 	- Count
-  - Concret Implementation: Arrays, Linked List, etc.
+  	- Concret Implementation: Arrays, Linked List, etc.
 - Abstract data types: Define data and operations, but no implementation.
 
 ### Arrays
