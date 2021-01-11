@@ -77,6 +77,7 @@ codepion.registrationPage.init();
 ```
 
 ### Module Design Pattern
+- UI Module, Events Module, Data Module and more.
 ```javascript
 var myNamespace = window.myNamespace || {};
 
