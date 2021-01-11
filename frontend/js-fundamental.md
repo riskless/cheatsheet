@@ -4,16 +4,16 @@ var shoppingList = ['orange', 'apple', 'banana'];
 console.log(shoppingList);
 
 for(var i = 0; i < shoppingList.length; i ++){
-	console.log(shoppingList[i]);
+  console.log(shoppingList[i]);
 }
 
 shoppingList.forEach(function(element){
-	console.log(element);
+  console.log(element);
 });
 
 //ES6
 for (element of shoppingList){
-	console.log(element);
+  console.log(element);
 }
 ```
 ### Function statement/declaration
@@ -36,11 +36,11 @@ var greet = function(name){
 ### IIFE (Immediately Invoked Function Expressions)
 ```javascript
 (function(){
-    console.log("Hi!");
+  console.log("Hi!");
 })();
 
 (function(){
-    console.log("Hi!");
+  console.log("Hi!");
 }());
 ```
 ### Recursion
@@ -60,16 +60,16 @@ console.log(factorial(4));//1*2*3*4
 ```javascript
 var signupController = window.signupController || {};
 signupController.registrationPage = {
-    // code
+  // code
     
-    //Initialization method
-    init: function(){
-        // some code
-    },
+  //Initialization method
+  init: function(){
+    // some code
+  },
     
-    method1 : function(){
-      // some code
-    }   
+  method1 : function(){
+    // some code
+  }   
 };
 
 //invoke the init method after the page loads
