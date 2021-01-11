@@ -1,3 +1,21 @@
+### Looping through arrays
+```javascript
+var shoppingList = ['orange', 'apple', 'banana'];
+console.log(shoppingList);
+
+for(var i = 0; i < shoppingList.length; i ++){
+	console.log(shoppingList[i]);
+}
+
+shoppingList.forEach(function(element){
+	console.log(element);
+});
+
+//ES6
+for (element of shoppingList){
+	console.log(element);
+}
+```
 ### Function statement/declaration
 - Hoisting (O)
 ```javascript
@@ -25,7 +43,19 @@ var greet = function(name){
     console.log("Hi!");
 }());
 ```
-
+### Recursion
+```javascript
+var factorial = function(n){
+    if(n == 1){
+        return 1;
+    }else{
+        return n * factorial(n-1);
+    }
+};
+console.log(factorial(3));//1*2*3
+console.log(factorial(4));//1*2*3*4
+//factorial(n) = n * factorial (n-1)
+```
 ### Singleton Design Pattern
 ```javascript
 var signupController = window.signupController || {};
