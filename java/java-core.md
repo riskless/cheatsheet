@@ -25,8 +25,7 @@ public static synchronized void display() {
 // synchronized(*.class) {}
 ```
 - volatile
-If the variable is volatile, both read/write operations happen directly on memory, not on local cache.
-
+	- If the variable is volatile, both read/write operations happen directly on memory, not on local cache.
 
 - wait(), notify(), notifyAll()
 ```java
