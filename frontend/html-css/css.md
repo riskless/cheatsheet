@@ -9,7 +9,7 @@
   > selector {@include mixin-name}
   - A mixin can also include other mixins.
   - Passing variables to a mixin
-  ```html
+  ```css
   /* Define mixin with two arguments */
 @mixin bordered($color, $width) {
   border: $width solid $color;
