@@ -23,7 +23,7 @@
 ### Setup and getting started steps
 1. Install Node.js (From www.nodejs.org)
 2. Open terminal and install 'Anuglar CLI' using the command
-> npm install -g @angular/cli
+- npm install -g @angular/cli
 3. Go to your favourite directory and create a new Angular workspace using Angular CLI command
 - ng new app-name
 	- Creates a new workspace and an initial skeleton application
@@ -31,7 +31,7 @@
 	- Creates end-to-end tests for initial application
 4. Install 'Visual Studio Code' and import workspace
 5. Launch the app using Angular CLI
-> ng serve --open
+- ng serve --open
 
 ### NPM (Node Package Manager)
 - Easily manage project dependencies
