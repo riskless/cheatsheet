@@ -99,3 +99,173 @@ module.exports = function (grunt) {
 - grunt.loadNpmTasks('grunt-contrib-copy')
 	- Plugins list to be loaded, to help with tasks
 
+### Simple example 
+- install grunt
+	- node -v
+	- npm -v
+	- grunt -v
+	- npm install -g grunt-cli
+	- grunt -v
+	- npm init
+	- npm install grunt --save
+	- npm install grunt-contrib-copy --save
+- create gruntfile.js
+- execute grunt task
+	- grunt --gruntfile gruntfile.js copy
+	- grunt copy (default: gruntfile.js)
+	- grunt copy:t1 (a specific target)
+	- grunt (default task -> grunt.registerTask('default', 'copy:t1');)
+	- grunt t1 (default task alias -> grunt.registerTask('t1', 'copy:t1');)
+
+### Minifying (or uglifying) files using Grunt JS
+- install grunt
+	- npm install grunt --save
+
+- install grunt-contrib-uglify plugin 
+	- npm install grunt-contrib-uglify --save
+
+- index.html
+```html
+<script src="src/app.js"></script>
+<script src="src/one.js"></script>
+<script src="src/t/two.js"></script>
+
+<input type="button" onclick="app.firstMethod()" value="First Message">
+<input type="button" onclick="app.secondMethod()" value="Second Message">
+```
+
+- app.js
+```js
+var app = {};
+```
+
+- one.js
+```js
+app.firstMethod = function() {
+	alert("First Method");
+}
+```
+
+- two.js
+```js
+app.secondMethod = function() {
+	debugger;
+	alert("Second Method");
+}
+```
+
+- to minify JS files (and combine/concat) into a single file using Grunt JS
+```js
+module.exports = function (grunt) {
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+		uglify: {
+			t1: {
+				files:{
+					'dest/all.min.js': ['src/app.js','src/one.js', 'src/t/two.js']
+				}
+			}
+		}
+	});
+};
+```
+- grunt uglify:t1
+
+- index.html
+```html
+<script src="dest/all.min.js"></script>
+
+<input type="button" onclick="app.firstMethod()" value="First Message">
+<input type="button" onclick="app.secondMethod()" value="Second Message">
+```
+
+- to create and use 'sourcemaps' feature, while minifying Javascript files using Grunt JS 
+```js
+module.exports = function (grunt) {
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+		uglify: {
+			t1: {
+				options: {
+					sourceMap: true // creating all.min.js.map
+				}, 
+				files:{
+					'dest/all.min.js': ['src/app.js','src/one.js', 'src/t/two.js']
+				}
+			}
+		}
+	});
+};
+```
+- grunt uglify:t1
+
+- to minify JS files retaining the folder structure using Grunt JS
+```js
+module.exports = function (grunt) {
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+		uglify: {
+			t2: {
+				files:[{
+					cwd: 'src/',	// cwd: Current Working Directory
+					src: '**/*.js',
+					dest: 'target/',
+					expand: true,
+					flatten: false,
+					ext: '.min.js'
+				}]
+			}
+		}
+	});
+};
+```
+- grunt uglify:t2
+
+- index.html
+```html
+<script src="target/app.min.js"></script>
+<script src="target/one.min.js"></script>
+<script src="target/t/two.min.js"></script>
+
+<input type="button" onclick="app.firstMethod()" value="First Message">
+<input type="button" onclick="app.secondMethod()" value="Second Message">
+```
+
+###  Grunt Watch 
+- Installing and working with grunt-contrib-watch plug-in 
+	- npm install grunt-contrib-watch --save
+
+- Monitor JS files and minify them automatically using Grunt Watch
+```js
+module.exports = function (grunt) {
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.initConfig({
+		pkg: grunt.file.readJSON('package.json'),
+		uglify: {
+			t1: {
+				files:{
+					'dest/all.min.js': ['src/**/*.js']
+				}
+			}
+		},
+
+		watch: {
+			w1: {
+				files: ['src/**/*.js'],
+				tasks: ['uglify:t1']
+			}
+		}
+	});
+};
+```
+
+- grunt watch:w1
+
+### References
+- [Grunt JS](https://www.youtube.com/watch?v=sS4sTrd57t8 "Grunt JS")
+- [How to minify (or uglify) JavaScript files](https://www.youtube.com/watch?v=Gkv7pA0PMJQ&list=PLvZkOAgBYrsRmqqKk6W1O4HKVrlaZsPAc&index=3)
+- [Understanding Grunt Watch](https://www.youtube.com/watch?v=dKZOOj6ruiE)
