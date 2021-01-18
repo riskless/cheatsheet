@@ -26,6 +26,9 @@
 > npm install -g @angular/cli
 3. Go to your favourite directory and create a new Angular workspace using Angular CLI command
 > ng new app-name
+	- Creates a new workspace and an initial skeleton application
+	- Installs necessary npm packages and other dependencies
+	- Creates end-to-end tests for initial application
 4. Install 'Visual Studio Code' and import workspace
 5. Launch the app using Angular CLI
 > ng serve --open
