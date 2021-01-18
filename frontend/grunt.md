@@ -86,26 +86,11 @@ module.exports = function (grunt) {
 	- To load all the necessary node/grunt modules to execute the tasks
 
 - copy:{}
-```js
-copy:{
-	t1: {
-		src: 'dir1/*',
-		dest: 'dir2/'
-	}
-}
-```
 	- Grunt task configurations and options
 	- In this case, "copy" is a task, loaded through a plugin called "grunt-contrib-copy"
 	- Can have multiple tasks listed here
 
 - t1:{}
-```js
-t1: {
-	src: 'dir1/*',
-	dest: 'dir2/'
-}
-```
-
 	- Target of a task
 		- A task executed in a context of options
 	- At least, one target is usually expected
