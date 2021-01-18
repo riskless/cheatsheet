@@ -25,7 +25,7 @@
 2. Open terminal and install 'Anuglar CLI' using the command
 > npm install -g @angular/cli
 3. Go to your favourite directory and create a new Angular workspace using Angular CLI command
-> ng new app-name
+- ng new app-name
 	- Creates a new workspace and an initial skeleton application
 	- Installs necessary npm packages and other dependencies
 	- Creates end-to-end tests for initial application
