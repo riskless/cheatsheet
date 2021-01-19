@@ -107,3 +107,218 @@ console.log(module);
 	- http
 	- util
 	- os
+### FS Module
+- The fs module provides access to the file system.
+- The fs module has functions for creating, reading, updating and deleting files and directories.
+- It has asynchronous as well as synchronous functions.
+- It has streaming as well as non-streaming functions.
+- Always prefer asynchronous functions.
+- Always prefer streaming functions for large files.
+- FS modules methods
+	- readFile() 
+		- Reads the content of a file asynchronously.
+	- readFileSync() 
+		- Same as readFile(), but synchronous.
+	- writeFile() 
+		- Writes data to a file asynchronously.
+	- writeFileSync() 
+		- Same as writeFile(), but synchronous.
+	- unlink() 
+		- Deletes a file asynchronously.
+	- unlinkSync() 
+		- Deletes a file, but synchronous.
+	- mkdir()
+		- Makes a new directory asynchronously.
+	- mkdirSync()
+		- Same as mkdir(), but synchronous.
+	- rmdir()
+		- Removes a directory asynchronously.
+	- rmdirSync()
+		- Same as rmdir(), but synchronous.
+	- createReadStream()
+		- Returns a new readable stream object asynchronously.
+	- createWriteStream()
+		- Returns a new writeable stream object asynchronously.
+	- rename()
+		- Renames a file asynchronously.
+	- renameSync()
+		- Same as rename(), but synchronous.
+
+- Test code
+```js
+const fs = require('fs');
+
+// Synchronous
+const filecontent = fs.readFileSync('./readme.txt', 'utf-8');
+fs.writeFileSync('./writeme.txt', filecontent, 'utf-8');
+console.log('Sync file read/write');
+
+// Asynchronous file read/write
+fs.readFile('./readme.txt', 'utf-8', (err, data) => {
+  fs.writeFile('./writemeasync.txt', data, 'utf-8', () => {
+    console.log('Async file read/write');
+  });
+});
+
+```
+
+### ExpressJS
+- It is possible to create a simple web server using the http module. But other common web development tasks need a lot of custom code to be written.
+- Web Frameworks provide a easy way of implementing common web development requirements.
+- Express is the most popular Node.js web framework, and is the underlying library for a number of other popular Node web frameworks like MEAN/MERN.
+- Express is minimalist & unopinionated. But, Express JS community has created packages to address almost any web development problem. There are libraries to work with cookies, sessions, user logins, URL parameters, POST data, security headers, and many more.
+- ExpressJS Features
+	- Write handlers for different HTTP verbs at different URL paths (routes).
+	- Integrate with "view" rendering templates. Express has support for a number of template engines. Some popular template engines that work with Express are Pug (Jade), Mustache, Handlebars, and EJS.
+	- Set common web application settings (like location of static content).
+	- Getting query, route and post parameters.
+	- Allow usage of additional request processing "middleware" for requirements like cookies, sessions, emails, file upload etc. 
+
+### An example (express)
+- app.js
+```js
+const express = require('express');
+const bp = require('body-parser');
+const app = express();
+app.use(bp.json());
+
+const skillsData = {
+  skills: ['Node.js'],
+};
+
+app.get('/api/skills', (req, res) => {
+  res.json(skillsData);
+});
+
+app.post('/api/skills', (req, res) => {
+  skillsData.skills.push(req.body.skill);
+  res.json(skillsData);
+});
+
+app.delete('/api/skills', (req, res) => {
+  skillsData.skills.pop(req.body.skill);
+  res.json(skillsData);
+});
+
+app.listen(8080, () => {
+  console.log('App started and listening at port 8080');
+});
+```
+
+### An example (express + ejs)
+- ejs install
+	- npm install ejs --save
+
+- app.js
+```js
+const express = require('express');
+const ejs = require('ejs');
+
+const bp = require('body-parser');
+const urlencoded = bp.urlencoded({ extended: false });
+
+const app = express();
+app.set('view engine', 'ejs');
+
+app.get('/', (req, res) => {
+  res.send('Home | <a href="aboutus">About Us</a> | <a href="contactus">Contact Us</a><h1>Hello World!</h1>');
+});
+
+app.get('/aboutus', (req, res) => {
+  res.sendFile(`${__dirname}/aboutus.html`);
+});
+
+app.get('/input/:name/:location', (req, res) => {
+  inputData = {
+    rp: req.params,
+    qs: req.query,
+    skills: [
+      'Node.js', 'React.js', 'JavaScript',
+    ],
+    nav: ['Home', 'About Us', 'Contact Us'],
+  };
+
+  res.render('details', inputData);
+});
+
+app.get('/contactus', (req, res) => {
+  res.sendFile(`${__dirname}/contactus.html`);
+});
+
+app.post('/postdata', urlencoded, (req, res) => {
+  res.json(req.body);
+});
+
+app.get('*', (req, res) => {
+  res.send('<h2>404 - Page Not Found</h2>');
+});
+
+app.listen(8080, () => {
+  console.log('App started and listening at port 8080');
+});
+```
+
+- aboutus.html
+```html
+<body>
+  <a href="/">Home</a> | About Us | <a href="/contactus">Contact Us</a>
+  <h1>About Us</h1>
+  <a href="/input/harold/seoul?web=howtostudyit.com&profession=Engineer">Test Query & Route Parameters</a>
+</body>
+```
+
+- conatact.html
+```html
+<body>
+  <a href="/">Home</a> | <a href="/aboutus">About Us</a> | Contact Us
+  <h1>Contact Us</h1>
+  <form action="/postdata" method="post">
+    Name:
+    <input name="name" type="text"><br/><br/> Email:
+    <input name="email" type="email"><br/><br/> Comments:<br/>
+    <textarea name="comments" id="" cols="30" rows="10"></textarea><br/><br/>
+    <input type="submit" value="Submit">
+  </form>
+</body>
+```
+
+- views/details.ejs
+```html
+<body>
+  <!--Include Partial-->
+  <%-include menu.ejs%>
+    <p>
+      Name: <%=rp.name%><br>
+      Location: <%=rp.location%><br> 
+      Website: <%=qs.web%><br> 
+      Profession: <%=qs.profession%><br>
+      <br>
+    </p>
+
+    <span>Skills:</span>
+    <ul>
+      <% skills.forEach(function(data){%>
+        <li>
+          <%=data%>
+        </li>
+        <%});%>
+    </ul>
+</body>
+```
+- views/menu.ejs
+```html
+<ul>
+  <% nav.forEach(function(data){%>
+    <li>
+      <a href="#">
+        <%=data%>
+      </a>
+    </li>
+    <%});%>
+</ul>
+```
+
+### References
+- [Node.js Tutorial](https://www.w3schools.com/nodejs/default.asp)
+- [Node.JS Tutorial](https://www.youtube.com/watch?v=_9tcueGoDW8&list=PLVz1UWMtyw51n7FLxcSbh9S23oDUiisc0&index=17)
+- [NODE JS Online Training](https://www.youtube.com/watch?v=YcLFmi7nYog)
