@@ -28,8 +28,8 @@
 ### Task Execution - GRUNT
 - GRUNT Task with 3 Targets (or 3 inner tasks)
 1. Code Quality Check (say JSHint)
-- source folder -> Read Files -> Process -> Write Files -> result folder
+	- source folder -> Read Files -> Process -> Write Files -> result folder
 2. Concat files
-- Previous result folder ->  Read Files -> Process -> Write Files
+	- Previous result folder ->  Read Files -> Process -> Write Files
 3. Minify files
-- Previous result folder ->  Read Files -> Process -> Write Files -> result folder
+	- Previous result folder ->  Read Files -> Process -> Write Files -> result folder
