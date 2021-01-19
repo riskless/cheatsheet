@@ -30,7 +30,7 @@
 - Super Key
 	- A Super Key is a set of attributes within a table that uniquely identify each row/record/tuple.
 - Candidate Key
-	- A Candidate Key is minimal set	of attributes, which can uniquely identify each record in a Table.
+	- A Candidate Key is minimal set of attributes, which can uniquely identify each record in a Table.
 - Primary Key
 	- A Primary key is any key that is chosen to uniquely identify a record in the table (Other unused keys are called Secondary Key or Alternate Key)
 	- Typically, ‘ID’ column of a table is often used as primary Key.
@@ -448,3 +448,5 @@ DROP FUNCTION addTen;
 ### References
 - SQL Commands
 	- https://www.postgresql.org/docs/10/sql-commands.html
+- PostgreSQL, PGadmin, SQL Tutorial + Mini Project
+	- https://www.eduonix.com/postgresql-pgadmin-sql-tutorial-mini-project
