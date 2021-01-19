@@ -143,15 +143,15 @@ function createJWT() {
 
 ### References
 - Create JWT
-http://jwtbuilder.jamiekurtz.com/
-http://kjur.github.io/jsjws/
+	- http://jwtbuilder.jamiekurtz.com/
+	- http://kjur.github.io/jsjws/
 
 - Verify JWT
-https://jwt.io/
+	- https://jwt.io/
 
 - Base64 encode/decode
-https://www.base64encode.org/
-https://www.base64decode.org/
+	- https://www.base64encode.org/
+	- https://www.base64decode.org/
 
 - [JSON Web Token](https://www.youtube.com/watch?v=oXxbB5kv9OA&list=RDCMUCJ1GreMvJv6U5JtPGCinwJw&index=2)
 - [How to create JWT (JSON web token) using pure JavaScript (and Crypto-Js)](https://www.youtube.com/watch?v=oneCuYkWz0c&list=RDCMUCJ1GreMvJv6U5JtPGCinwJw&index=2)
