@@ -117,7 +117,7 @@ DELETE FROM <table_name> WHERE <condition>;
 DELETE FROM Students WHERE id = 2;
 ```
 
-T### able Operations
+### Table Operations
 - CREATE TABLE & CREATE TABLE AS: 
 	- Helps us create a table or Create a table by populating its data from the result of another Query.
 - ALTER TABLE
