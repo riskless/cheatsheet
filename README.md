@@ -1,1 +1,1 @@
-# Building acheat sheet for developers
+# Building a cheat sheet for developers
