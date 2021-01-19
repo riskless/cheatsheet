@@ -60,8 +60,7 @@
 1. In-Built or Core Modules
 2. NPM or Installed Modules
 3. Custom Modules
-
-- Node.js does not support ES6 import statement. Modules follow commonJS specification.
+	- Node.js does not support ES6 import statement. Modules follow commonJS specification.
 
 ### An example of custom modules
 - app.js
