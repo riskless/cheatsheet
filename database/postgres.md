@@ -79,9 +79,9 @@ CREATE TABLE students (
 
 ### Operations
 - =	Equal
-- >	Greater than
+- \>	Greater than
 - <	Less than
-- >=	Greater than or equal
+- \>=	Greater than or equal
 - <=	Less than or equal
 - <> or !=	Not equal
 - AND	Logical operator AND
