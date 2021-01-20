@@ -773,3 +773,198 @@ session.save(emp);
 session.save(boss);
 session.save(person);
 ```
+### Cache
+- First Level Cache
+	- scope : Session
+- Second Level Cache
+	- scope : SessionFactory
+- Example (second leve cache)
+```html
+<!-- pom.xml -->
+<dependency>
+	<groupId>org.hibernate</groupId>
+	<artifactId>hibernate-ehcache</artifactId>
+	<version>5.3.6.Final</version>
+</dependency>
+
+<dependency>
+	<groupId>net.sf.ehcache</groupId>
+	<artifactId>ehcache-core</artifactId>
+	<version>2.6.11</version>
+</dependency>
+
+<!-- hibernate.cfg.xml -->
+<property name="hibernate.cache.use_second_level_cache">true</property>
+<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+<property name="hibernate.cache.use_query_cache">true</property>
+
+<!-- (or) hibernate.properties -->
+hibernate.cache.use_second_level_cache=true
+hibernate.cache.region.factory_class=org.hibernate.cache.ehcache.EhCacheRegionFactory
+
+<!-- ecache.xml -->
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="true"
+	monitoring="autodetect" dynamicConfig="true">
+
+	<diskStore path="java.io.tmpdir" />
+
+	<defaultCache maxEntriesLocalHeap="10000" eternal="false"
+		timeToIdleSeconds="120" timeToLiveSeconds="120"
+		diskSpoolBufferSizeMB="30" maxEntriesLocalDisk="10000000"
+		diskExpiryThreadIntervalSeconds="120" memoryStoreEvictionPolicy="LRU"
+		statistics="false">
+		<persistence strategy="localTempSwap" />
+	</defaultCache>
+
+	<cache name="mycache"
+		maxEntriesLocalHeap="10000" eternal="false" timeToIdleSeconds="5"
+		timeToLiveSeconds="10">
+		<persistence strategy="localTempSwap" />
+	</cache>
+
+	<cache name="site.haroldkim.Employee"
+		maxEntriesLocalHeap="10000" eternal="false" timeToIdleSeconds="5"
+		timeToLiveSeconds="10">
+		<persistence strategy="localTempSwap" />
+	</cache>
+
+</ehcache>
+```
+
+```java
+/* Employee */
+@Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class Employee implements Serializable {}
+
+/* Test */
+public class EHCacheTest {
+	public static void main(String[] args) {
+	
+		CacheManager cmgr = CacheManager.getInstance();
+		
+		//Create a new cache using the below instruction
+		//cmgr.addCache("MyOwnCache");
+		
+		Cache cache = cmgr.getCache("mycache");
+		
+		CacheConfiguration config = cache.getCacheConfiguration();
+		config.setTimeToIdleSeconds(60);
+		config.setTimeToLiveSeconds(120);
+		
+		cache.put(new Element("1","Apple"));
+		cache.put(new Element("2","Banana"));
+		cache.put(new Element("3","Orange"));
+		
+		Element ele = cache.get("1");
+		
+		System.out.println("Printing element with Key 1 : " + ele.getObjectValue());
+		System.out.println("Is Element 2 on Disk ? : " + cache.isElementOnDisk(2));
+		
+		// shut down the cache manager
+		cmgr.shutdown();
+	}
+}
+```
+
+### Hibernate Query Language
+- Hibernate Query Language (HQL) is similar to SQL, but it operates on Persistent objects, rather than on the database tables. SQL queries may differ from database to database. But, whereas HQL will remain name, no matter what database you are using. This is possible because, hibernate framework will translate the HQL queries in to native (or) database specific SQL statements. The Dialect that you configure in ‘hibernate.cfg.xml’ is the one that helps hibernate to generate database specific queries.
+- Example
+```java
+// From Clause
+String empQuery = "from Employee";
+Query query = session.createQuery(empQuery);
+List results = query. getResultList();
+
+// Using Alias
+String empQuery = "Select e.name FROM Employee e";
+Query query = session.createQuery(empQuery);
+List results = query. getResultList();
+
+// Where Clause:
+String empQuery = "from Employee where name='John'";
+String empQuery = "Select e.name FROM Employee e Where e.city=’city’";
+String empQuery = "from Employee where city is not null";
+String empQuery = "select b from Boss b, Employee e where b.name = e.name";
+
+// Order By
+String empQuery = "FROM Employee E ORDER BY E.emp DESC";
+```
+
+- CriteriaQuery
+```js
+select
+		e.employee as ename,
+		e.salary as salary,
+		b.bname as boss_name 
+from boss b join employee e 
+where
+		e.boss_id=b.bid 
+		and (
+				lower(e.employee) like 'empx%'
+		) 
+		and b.bname='Harold' 
+order by e.employee desc
+```
+
+```java
+CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+CriteriaQuery criteriaQuery = criteriaBuilder.createQuery(ValueObject.class);
+
+// You would mention all the Entities/tables that are needed to get the desired result
+// The Root object of each enity, would help us access its fields
+// With below code, we want to perform Join (defaults to Inner join) of two tables
+Root bossRoot = criteriaQuery.from(Boss.class);
+Root empRoot = criteriaQuery.from(Employee.class);
+
+// The list of predicates to apply. These are essentially 'Where' caluses
+Predicate[] restrictions = new Predicate[] { 
+		criteriaBuilder.equal(empRoot.get("boss"), bossRoot.get("id")),
+		criteriaBuilder.like(criteriaBuilder.lower(empRoot.get("name")), "empx%"),
+		criteriaBuilder.equal(bossRoot.get("name"), "Sundar"),
+		criteriaBuilder.greaterThan(empRoot.get("salary"), 1500)
+		};
+
+// Applying the restriction
+criteriaQuery.where(restrictions);
+
+// OrderBy Clause
+criteriaQuery.orderBy(criteriaBuilder.desc(empRoot.get("name")));
+
+criteriaQuery.select(criteriaBuilder.construct(ValueObject.class, empRoot.get("name"),
+		empRoot.get("salary"), bossRoot.get("name")));
+
+TypedQuery query = session.createQuery(criteriaQuery);
+
+System.out.println(query.getResultList());
+```
+
+- Named Queries
+	- 
+- Example
+```java
+@NamedQueries({
+	@NamedQuery(
+		name = "findEmployeeByName",
+		query="FROM Employee e Where e.name = "placeholder""
+	)
+})
+@Entity
+public class Employee {}
+
+/* Test */
+TypedQuery query = session.getNameQuery();
+query.setParameter("placeholder","emp4");
+System.out.println(query.getResultList());
+
+/* If you want to use the named query using the XML configuration, then the below tag needs to be added as part of the entity xml mapping file. */
+<query name="findEmployeeByName">  
+<![CDATA[from Employee e where e.name = :placeHolder]]>  
+</query> 
+```
+
+### References
+- HQL: The Hibernate Query Language
+	- https://docs.jboss.org/hibernate/orm/3.5/reference/en/html/queryhql.html
