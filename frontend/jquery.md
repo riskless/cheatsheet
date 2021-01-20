@@ -479,7 +479,7 @@ $("#p_one").click(function () {
 
 
 ### JQuery UI
--- datepicker
+- datepicker
 ```js
 <input type="text" name="birthday" id="birthday">
 
