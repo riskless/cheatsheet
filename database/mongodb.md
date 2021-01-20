@@ -84,7 +84,7 @@ db.posts.find().forEach(function(doc) {
   print("Blog Post: " + doc.title)
 })
 ```
-- Find One Row
+- Find Row
 	- db.posts.findOne({ category: 'News' })
 	- db.tours.find({name:"The Forest Hiker"})
 	- db.tours.find({ price: {$lte: 500} })
