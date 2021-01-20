@@ -964,7 +964,162 @@ System.out.println(query.getResultList());
 <![CDATA[from Employee e where e.name = :placeHolder]]>  
 </query> 
 ```
+### Bulk Data
+```java
+// out of memory
+Employee emp = null;
+for (int i = 0; i < 40; i++) {
+	emp = new Employee("emp" + i, 1000);
+	session.save(emp);
 
+	if (i % 10 == 0) {
+		session.flush();
+		session.clear();
+	}
+}
+
+// clear cache
+Employee emp = null;
+for (int i = 0; i < 40; i++) {
+	emp = new Employee("emp" + i, 1000);
+	session.save(emp);
+
+	if (i % 10 == 0) {
+		session.clear();
+	}
+}
+
+// clear cache but no update
+Employee emp = null;
+for (int i = 0; i < 40; i++) {
+	emp = new Employee("emp" + i, 1000);
+	session.save(emp);
+	emp.setName("new"+i);
+	if (i % 10 == 0) {
+		session.clear();
+	}
+}
+
+// clear cache and update
+Employee emp = null;
+for (int i = 0; i < 40; i++) {
+	emp = new Employee("emp" + i, 1000);
+	session.save(emp);
+	emp.setName("new"+i);
+	if (i % 10 == 0) {
+		session.flush();
+		// sessionFactory.getCache().evictAll(); // second level cache
+		session.clear();
+	}
+}
+
+// Pagination
+Query totalRecordsQuery = session.createQuery("Select count(*) from Employee");
+Long totalRecords = (Long) totalRecordsQuery.getSingleResult();
+int pageSize = 10;
+int lastPageNumber = (int) (Math.ceil(totalRecords / pageSize));
+
+Query query = session.createQuery("from Employee");
+for (int i = 0; i < lastPageNumber; i++) {
+	query.setFirstResult(pageSize * i);
+	query.setMaxResults(pageSize);
+	System.out.println(query.getResultList());
+}
+
+// Scrollable Results
+// store results in RAM memory instead of cache memory
+Query query = session.createQuery("from Employee");
+ScrollableResults results = query.scroll();
+int readCount = 0;
+
+while ( results.next() ) {
+		 Employee employee = (Employee) results.get(0);
+		 System.out.println(employee);
+		 employee.setName("xyz");
+		 
+		 if ( readCount++ % 10 == 0 ) {
+				session.flush();
+				session.clear();
+		 }
+}
+```
+### Reverse Engineering
+- Create Entity from Database
+	- Install JBoss Tools (Eclipse Marketplace)
+	- Connect to Database (Open "Database Development" Perspective in Eclipse)
+	- Reverse (Open "Hibernate" Perspective in Eclipse)
+
+### Entity Manager and JPA Spec
+- SessionFactory -> EntityManagerFactory
+- Session -> EntityManager
+- hibernate.cfg.xml -> persistence.xml
+- get() -> find()
+- evict() -> detach()
+- Example
+```java
+/* resouces/META-INF/persistence.xml */
+<persistence-unit name="persistence">
+	<description>Hibernate Entity Manager</description>
+	<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+	<properties>
+		<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
+		<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://127.0.0.1:5432/postgres" />
+		<property name="javax.persistence.jdbc.user" value="postgres" />
+		<property name="javax.persistence.jdbc.password" value="postgres" />
+		<property name="hibernate.show_sql" value="true" />
+		
+		<property name="hibernate.hbm2ddl.auto" value="update"/> 
+	</properties>
+
+</persistence-unit>
+
+/* Employee */
+@Entity
+@Table(name = "employee")
+public class Employee {
+	@Id
+	@Column(name = "empid")
+	private Long id;
+
+	@Column(name = "employee")
+	private String name;
+	
+	private int salary;
+	
+	@Version
+	private int version;
+}
+
+/* Test */
+EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("persistence");
+EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+// Creating an Employee
+entityManager.getTransaction().begin();
+
+Employee employee = new Employee(1l, "Sundar", 1500);
+
+entityManager.persist(employee);
+
+entityManager.getTransaction().commit();
+
+// get Employee
+Employee emp = entityManager.find(Employee.class, 1l);
+System.out.println("Read Employee " + emp);
+
+// remove and entity
+entityManager.getTransaction().begin();
+
+System.out.println("Deleting An Employee");
+entityManager.remove(emp);
+
+entityManager.getTransaction().commit();
+
+// close the entity manager
+entityManager.close();
+entityManagerFactory.close();
+```
 ### References
 - HQL: The Hibernate Query Language
 	- https://docs.jboss.org/hibernate/orm/3.5/reference/en/html/queryhql.html
