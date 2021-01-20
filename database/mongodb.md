@@ -1,5 +1,10 @@
-
 ### Commands
+- start server
+	- mongod
+- start mongo shell
+	- mongo
+- stop mongo shell
+	- quit()
 - Show All Databases
 	- show dbs
 - Show Current Database
@@ -14,6 +19,7 @@
 	- show collections
 - Insert Row
 ```js
+// posts
 db.posts.insert({
   title: 'Post One',
   body: 'Body of post one',
@@ -25,6 +31,9 @@ db.posts.insert({
   },
   date: Date()
 })
+
+// tours
+db.tours.insertOne({name:"The Forest Hiker", price:297,rating:4.7})
 ```
 - Insert Multiple Rows
 ```js
@@ -48,6 +57,9 @@ db.posts.insertMany([
     date: Date()
   }
 ])
+
+// tours
+db.tours.insertMany([{name:"The Sea Explorer", price:497, rating:4.8},{name:"The Snow Adventure",price:997,rating:4.9,difficulty:"easy"}])
 ```
 - Get All Rows
 	- db.posts.find()
@@ -74,12 +86,18 @@ db.posts.find().forEach(function(doc) {
 ```
 - Find One Row
 	- db.posts.findOne({ category: 'News' })
+	- db.tours.find({name:"The Forest Hiker"})
+	- db.tours.find({ price: {$lte: 500} })
+	- db.tours.find({ price: {$lt: 500}, rating: {$gte:4.8}  })
+	- db.tours.find({ $or: [ {price: {$lt: 500}}, {rating: {$gte:4.8}} ]  })
 - Find Specific Fields
 ```js
 db.posts.find({ title: 'Post One' }, {
   title: 1,
   author: 1
 })
+
+db.tours.find({ $or: [ {price: {$lt: 500}}, {rating: {$gte:4.8}} ]  }, {name:1})
 ```
 - Update Row
 ```js
@@ -92,6 +110,17 @@ db.posts.update({ title: 'Post Two' },
 {
   upsert: true
 })
+
+// tours
+db.tours.updateOne(
+	{ name:"The Forest Hiker"}, 
+	{ $set: {price:597}}
+)
+
+db.tours.updateMany(
+	{ price: {$gt: 200} }, 
+	{ $set: {premium:true}}
+)
 ```
 - Update Specific Field
 ```js
@@ -123,6 +152,8 @@ db.posts.update({ title: 'Post Two' },
 ```
 - Delete Row
 	- db.posts.remove({ title: 'Post Four' })
+	- db.tours.deleteMany({ rating: {$lt: 4.8} })
+	- db.tours.deleteMany({})
 - Sub-Documents
 ```js
 db.posts.update({ title: 'Post One' },
