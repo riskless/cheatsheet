@@ -39,3 +39,22 @@
 	- TypeScript to JavaScript Transpiler
 	- Angular CLI module
 	- Minification library
+### Webpack
+- Manages the dependencies
+- Reduce the number of round trips required to run the app.
+- Doesn't include the code that is not used.
+- Increase performance
+- Improves load time
+
+### JIT (Just In Time Compiler)
+- Loads the application slower as it compiles the application when running for the first time.
+- Requires additional libraries to compile and hence more bundle size.
+- Suitable for local development not for production.
+- Less secure as original code can be seen.
+
+### AOT (Ahead of Time Compiler)
+- Compiled while building the app
+- No need to deploy the compiler reducing the bundle size and load time.
+- Suitable for production environment
+- More secure as the orginal source code is not visible.
+- ng serve --aot=true
