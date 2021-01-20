@@ -227,3 +227,6 @@ if-None-Match: "encrypt_key"
 	- Resources can be cached. Including in intermediary nodes like Proxies, CDN, etc
 - Cache-Control:Private
 	- Resources can be cached only in the client device, but not in intermediary nodes.
+
+### References
+- [Spring Boot REST & Angular + Full Stack Application](https://www.eduonix.com/spring-boot-rest-amp-angular-full-stack-application)
