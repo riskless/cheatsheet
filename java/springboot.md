@@ -228,5 +228,221 @@ if-None-Match: "encrypt_key"
 - Cache-Control:Private
 	- Resources can be cached only in the client device, but not in intermediary nodes.
 
+### @PatchMapping
+```java
+@PatchMapping(value = "/{id}")
+public @ResponseBody void saveManager(@PathVariable Long id, @RequestBody Map<Object, Object> fields) {
+	Product product = productService.getProduct(id);
+		// Map key is field name, v is value
+		fields.forEach((k, v) -> {
+			 // use reflection to get field k on manager and set it to value k
+				Field field = ReflectionUtils.findField(Product.class, (String) k);
+				field.setAccessible(true);
+				ReflectionUtils.setField(field, product, v);
+		});
+		productService.updateProduct(product);
+}
+
+/* Test */
+// http://localhost:8080/product/1
+{
+	name: "new product"
+}
+```
+
+### File Upload and Download
+```java
+/* application.properties */
+# Enable multipart uploads
+spring.servlet.multipart.enabled=true
+
+# Threshold after which files are written to disk.
+spring.servlet.multipart.file-size-threshold=2KB
+
+# Max file size.
+spring.servlet.multipart.max-file-size=10MB
+
+# Max Request Size
+spring.servlet.multipart.max-request-size=40MB
+
+/* FileStorageService */
+@Service
+public class FileStorageService {
+
+	private final Path fileStorageLocation;
+
+	// @Value("${file.upload-dir}") private String uploadDir;
+	
+	@Autowired
+	public FileStorageService() {
+		this.fileStorageLocation = Paths.get("C:/Users/Admin/Desktop/uploads")
+						.toAbsolutePath().normalize();
+
+		try {
+			Files.createDirectories(this.fileStorageLocation);
+		} catch (Exception ex) {
+			//throw Execption
+		}
+	}
+
+	public String storeFile(MultipartFile file) {
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+			try {
+					// Check if the file's name contains invalid characters
+					if(fileName.contains("..")) {
+							//throw exception
+					}
+
+					// Copy file to the target location (or Replacing if already existing)
+					Path targetLocation = this.fileStorageLocation.resolve(fileName);
+					Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+					return fileName;
+			} catch (IOException ex) {
+					//throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+			}
+			return fileName;
+	}
+
+	public Resource loadFileAsResource(String fileName) {
+			try {
+					Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+					Resource resource = new UrlResource(filePath.toUri());
+					if(resource.exists()) {
+							return resource;
+					} else {
+							//throw new MyFileNotFoundException("File not found " + fileName);
+					}
+			} catch (MalformedURLException ex) {
+					//throw new MyFileNotFoundException("File not found " + fileName, ex);
+			}
+	return null;
+	}
+}
+
+/* UploadFileResponse */
+public class UploadFileResponse {
+	private String fileName;
+	private String fileDownloadUri;
+	private String fileType;
+	private long size;
+}
+
+/* controller */
+@Autowired
+private FileStorageService fileStorageService;
+
+@PostMapping("/uploadFile")
+public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
+		String fileName = fileStorageService.storeFile(file);
+
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+						.path("/product/downloadFile/")
+						.path(fileName)
+						.toUriString();
+
+		return new UploadFileResponse(fileName, fileDownloadUri,
+						file.getContentType(), file.getSize());
+}
+
+@PostMapping("/uploadFiles")
+public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+		return Arrays.asList(files)
+						.stream()
+						.map(file -> uploadFile(file))
+						.collect(Collectors.toList());
+}
+
+@GetMapping("/downloadFile/{fileName:.+}")
+public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+		// Load file as Resource
+		Resource resource = fileStorageService.loadFileAsResource(fileName);
+
+		// Try to determine file's content type
+		String contentType = null;
+		try {
+				contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+		} catch (IOException ex) {
+				System.out.println(("Could not determine file type."));	
+		}
+
+		// Fallback to the default content type if type could not be determined
+		if(contentType == null) {
+				contentType = "application/octet-stream";
+		}
+
+		return ResponseEntity.ok()
+						.contentType(MediaType.parseMediaType(contentType))
+						.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+						.body(resource);
+}
+
+// {variable_name:regular_expression}
+// .+ (where . means 'any character' and + means 'one or more times')
+```
+
+### Exception Handling
+- Redirect the user to a dedicated error view
+- Build a totally custom error response
+- Log the exception
+
+```java
+/* CustomError */
+public class CustomError {
+	private HttpStatus status;
+	private String message;
+}
+
+/* ErrorHandler */ 
+@ControllerAdvice
+public class GlobalErrorHandler {
+	@ExceptionHandler({Exception.class})
+	public ResponseEntity<Object> handleError(HttpServletRequest req, Exception ex) {
+		CustomError error = new CustomError(HttpStatus.BAD_REQUEST, ex.getMessage());
+		return new ResponseEntity<Object>(error, new HttpHeaders(), error.getStatus());
+	}
+}
+```
+
+### Validation
+- Spring Default Validation
+```java
+@GetMapping("/{id}")
+public Product getProduct(@PathVariable(value="id",required=true) Long id) {
+	return productService.getProduct(id);
+}
+
+/* client */
+// localhost:8080/products/abc -> Invalid-400 Bad Request Error Response
+```
+
+- Spring Request Body Validation
+```java
+/* Controller */
+@PutMapping
+public Product updateProductUsingJson(@RequestBody @Valid Product product) {
+	productService.updateProduct(product);
+	return product;
+}
+
+/* Product */
+public class Product {
+	private Long productId;
+	@NotBlank(message="Name is a mandatory field")
+	private String productName;
+	@NotNull(message="Price needs to be specified")
+	private Integer productPrice;
+}
+
+/* client */
+{
+	"productId": 1,
+	"productName":"",
+	"productPrice":0
+}
+// Invalid - 400 Bad Request Error Response
+```
+
 ### References
 - [Spring Boot REST & Angular + Full Stack Application](https://www.eduonix.com/spring-boot-rest-amp-angular-full-stack-application)
