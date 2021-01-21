@@ -59,7 +59,7 @@
 - More secure as the orginal source code is not visible.
 - ng serve --aot=true
 
-### data-binding 
+### Data Binding 
 1. One way data-binding
 - From Component to View Template
 - With interpolation, we place the component property name in the view template, enclosed in double curly braces: {{propertyName}}
@@ -82,8 +82,113 @@
 // We can also use the alternate syntax with bind- prefix. This is known as canonical form
 <button bind-disabled='isDisabled'>Click me</button>
 ```
-
 2. One way data-binding
 	- From View Template to Component
 3. Two way data-binding	
 	- From Component to View Template & From View template to Component
+
+### HTML element attribute and DOM (Document Object Model) property
+- HTML attributes and the DOM properties are different things.
+- When a browser loads a web page, the browser creates a Document Object Model of that page.
+- DOM contains the HTML elements as objects, their properties, methods and events and it is a standard for accessing, modifying, adding or deleting HTML elements.
+- Attributes are defined by HTML, where as properties are defined by the DOM.
+- Attributes initialize DOM properties. Once the initialization complete, the attributes job is done.
+- Property values can change, where as attribute values can't.
+- Angular binding works with properties and events, and not attributes. Angular data-binding is all about binding to DOM object properties and not HTML element attributes.
+- The role of attributes is to initialize element properties and their job is done.
+
+### Angular attribute binding
+- In some situations we want to be able to bind to HTML element attributes.For example, colspan and aria attributes does not have corresponding DOM properties.
+```js
+columnSpan: number = 2;
+
+// property binding
+// error: Can't bind to 'colspan' since it isn't a known property of 'th'
+<th [colspan]="columnSpan">
+
+// attribute binding
+<th [attr.colspan]="columnSpan">
+<th attr.colspan="{{columnSpan}}">
+```
+
+### CSS Class binding
+```js
+// style
+.boldClass{
+    font-weight:bold;
+}
+
+.italicsClass{
+    font-style:italic;
+}
+
+.colorClass{
+    color:red;
+}
+
+// template
+classesToApply: string = 'italicsClass boldClass';
+
+// html
+// 'colorClass' is removed and these classes (italicsClass & boldClass) are added.
+<button class='colorClass' [class]='classesToApply'>My Button</button>
+
+
+/* Adding or removing a single class */
+// component
+applyBoldClass: boolean = false;
+
+// template
+// it does not remove the existing colorClass already added using the class attribute.
+<button class='colorClass' [class.boldClass]='!applyBoldClass'>My Button</button>
+
+// You can also removed an existing class that is already applied. The class binding removes the boldClass.
+applyBoldClass: boolean = false;
+
+<button class='colorClass boldClass italicsClass' [class.boldClass]='applyBoldClass'>My Button</button>
+
+/* To add or remove multiple classes use ngClass directive  */
+// Since both the keys (boldClass & italicsClass) are set to true, both classes will be added to the button element
+<button class='colorClass' [ngClass]='addClasses()'>My Button</button>
+
+// component
+applyBoldClass: boolean = true;
+applyItalicsClass: boolean = true;
+addClasses() {
+		let classes = {
+				boldClass: this.applyBoldClass,
+				italicsClass: this.applyItalicsClass
+		};
+		return classes;
+}
+```
+
+### Style binding 
+```js
+// component
+isBold: boolean = true;
+fontSize: number = 30;
+isItalic: boolean = true;
+
+addStyles() {
+	let styles = {
+		'font-weight': this.isBold ? 'bold' : 'normal',
+		'font-style': this.isItalic ? 'italic' : 'normal',
+		'font-size.px': this.fontSize
+	};
+
+	return styles;
+}
+
+// If the property 'isBold' is true, then font-weight style is set to bold else normal.
+<button style='color:red' [style.font-weight]="isBold ? 'bold' : 'normal'">My Button</button>
+
+// style property name can be written in either dash-case or camelCase. (font-size or fontWeight)
+
+// unit extension
+<button style='color:red' [style.font-size.px]="fontSize">My Button</button>
+
+/* To set multiple inline styles use NgStyle directive */
+<button style='color:red' [ngStyle]="addStyles()">My Button</button>
+
+```
