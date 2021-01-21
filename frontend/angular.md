@@ -58,3 +58,32 @@
 - Suitable for production environment
 - More secure as the orginal source code is not visible.
 - ng serve --aot=true
+
+### data-binding 
+1. One way data-binding
+- From Component to View Template
+- With interpolation, we place the component property name in the view template, enclosed in double curly braces: {{propertyName}}
+- The expression that is enclosed in double curly braces is commonly called as Template Expression.
+- Interpolation is a special syntax that Angular converts into a property binding. Interpolation is just a convenient alternative to property binding. 
+- Example
+```js
+<h1>{{'Name = ' + firstName}}</h1>
+<h1>{{'Name = ' + firstName}}</h1>
+<h1>{{ 10 + 20 + 30 }}</h1>
+<h1>{{firstName ? firstName : 'No name specified'}}</h1>
+<img src='{{imagePath}}'/>
+<img src='http://haroldkim.site/{{imagePath}}' />
+<h1>{{'Full Name = ' + getFullName()}}</h1>
+
+// property binding
+<img [src]='imagePath'/>
+<button [disabled]='isDisabled'>Click me</button>
+
+// We can also use the alternate syntax with bind- prefix. This is known as canonical form
+<button bind-disabled='isDisabled'>Click me</button>
+```
+
+2. One way data-binding
+	- From View Template to Component
+3. Two way data-binding	
+	- From Component to View Template & From View template to Component
