@@ -1,3 +1,20 @@
+### Contents
+- JavaScript
+- Variables
+- Math
+- Strings
+- Conditionals
+- Looping
+- Arrays
+- Functions
+- Date
+- Changing elements & event handling
+- Element styling
+- Manipulating the DOM
+- OO Javascript
+- Form validation
+- Exception Handling
+- References
 
 ### JavaScript
 - It is a programming language, used to create functionality in the web page.
@@ -194,6 +211,7 @@ document.write("Sup : ", strToStyle.sup(), "<br />");
 ```
 
 ### CONDITIONALS
+```js
 // Relational Operators : == != > < >= <=
 // === : Equal value and type
 // Logical Operators : && \\ !
@@ -280,6 +298,7 @@ for(k in customer){
 ```
 
 ### ARRAYS
+```js
 // Arrays have variable sizes and can contain multiple types in JS
 var tomSmith = ["Tom Smith", "123 Main", 120.50];
 
