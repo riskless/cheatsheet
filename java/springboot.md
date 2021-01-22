@@ -443,6 +443,235 @@ public class Product {
 }
 // Invalid - 400 Bad Request Error Response
 ```
+### RestTemplate
+- Json Jackson To Retrieve Specific Info
+```java
+/* controller */
+public class ProductController {
+	@Autowired
+	RestTemplate restTemplate;
+	
+	@GetMapping
+	public String getProduct() throws JsonMappingException, JsonProcessingException {
+		String resourceUrl = "http://localhost:8080/product";
+		ResponseEntity<String> response = restTemplate.getForEntity(resourceUrl+"/1", String.class);
 
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode root = mapper.readTree(response.getBody());
+		JsonNode name = root.path("productName");
+
+		return name.asText(); // iPhone
+	}
+}
+
+/* result */
+{
+	"productId": 1,
+	"productName":"iPhone",
+	"productPrice":1000
+}
+
+/* SpringBootApplication */
+@Bean
+public RestTemplate restTemplate() {
+	return new RestTemplate();
+}
+```
+
+- POST Using REST Template
+```java
+@PostMapping
+public Map<String,Object> createProduct(@RequestBody Product product) {
+	String resourceUrl = "http://localhost:8080/product";
+	/*
+	// headers
+	HttpHeaders headers = new HttpHeaders();
+	headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	HttpEntity<?> request = new HttpEntity<>(headers);
+	*/
+
+	UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(resourceUrl)
+		.queryParam("id", product.getProductId())
+		.queryParam("name", product.getProductName())
+		.queryParam("price", product.getProductPrice());
+
+	Map<String,Object> response = restTemplate.postForObject(builder.toUriString(), HttpEntity.EMPTY, Map.calss);
+	
+	// restTemplate.exchange(builder.toUriString(), HttpMethod.POST, HttpEntity.EMPTY, Map.class);
+	
+	return response;
+}
+```
+
+- PUT Using REST Template
+```java
+@PostMapping
+public ResponseEntity<Product> updateProduct(@RequestBody Product product) {
+	String resourceUrl = "http://localhost:8080/product";
+	HttpEntity<Product> request = new HttpEntity<>(product);
+	
+	ResponseEntity<Product> response = restTemplate.exchange(resourceUrl, HttpMethod.PUT, request, Product.class);
+	
+	return response;
+}
+```
+
+- DELETE Using Rest Teamplate
+```java
+@DeleteMapping("/{id}")
+public ResponseEntity<Map> deleteProduct(@PathVariable("id") Long id) {
+	String resourceUrl = "http://localhost:8080/product/" + id;
+
+	ResponseEntity<Map> response = restTemplate.exchange(resourceUrl, HttpMethod.DELETE, HttpEntity.EMPTY, Map.class);
+	
+	return response;
+}
+```
+
+- Rest Template Error Handling
+```java
+/* ErrorHandler */
+@Component
+public class MyResponseErrorHandler implements MyResponseErrorHandler {
+	@Override
+	public boolean hasError(ClientHttpResponse httpResponse) throws IOException {
+		System.out.println("Has Error");
+		if (httpResponse.getStatusCode() != HttpStatus.OK) {
+			System.out.println("Status Code: " + httpResponse.getStatusCode());
+			System.out.println("Response: " + httpResponse.getStatusText());
+
+			if (httpResponse.getStatusCode() != HttpStatus.FORBIDDEN) {
+				System.out.println("403 Forbidden Response");
+				return true;
+			}
+			return true;
+		}
+	}
+}
+
+/* controller */
+public class TestController {
+	@Autowired
+	RestTemplate restTemplate;
+	
+	@GetMapping
+	public void testGet() throws JsonMappingException, JsonProcessingException {
+		restTemplate.setErrorHandler(new MyResponseErrorHandler());
+		String resourceUrl = "https://httpstat.us/404";
+		ResponseEntity<Product> response = restTemplate.exchange(resourceUrl, HttpMethod.GET, HttpEntity.EMPTY, Product.class);
+	}
+}
+```
+
+
+- Handling Time Out
+```java
+/* SpringBootApplication */
+@Bean
+public RestTemplate restTemplate() {
+	HttpComponentsClientHttpRequestFactory cliReqFact = new HttpComponentsClientHttpRequestFactory();
+	cliReqFact.setConnectTimeout(5000);
+	cliReqFact.setReadTimeout(5000);
+
+	return new RestTemplate(cliReqFact);
+}
+
+/* controller */
+public class TestController {
+	@Autowired
+	RestTemplate restTemplate;
+	
+	@GetMapping
+	public void testGet() throws JsonMappingException, JsonProcessingException {
+		restTemplate.setErrorHandler(new MyResponseErrorHandler());
+		String resourceUrl = "https://httpstat.us/200?sleep=10000";
+		ResponseEntity<Product> response = restTemplate.exchange(resourceUrl, HttpMethod.GET, HttpEntity.EMPTY, Product.class);
+	}
+}
+```
+
+### HATEOAS (Hypermedia as the Engine of Applicaiton State)
+- Client does not need to know the URI. Once the client gets initial URI, it must be able to navigate through API like we navigate a website. Hence it's called "Hypermedia as the Engine of Applicaiton State"
+```java
+/* pom.xml */
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+
+/* Product */
+public class Product extends ResourceSupport {
+	private Long productID;
+	private String productName;
+	private Integer productPrice;
+
+	public Product(Long productID, String productName, Integer productPrice) {
+		this.productID = productID;
+		this.productName = productName;
+		this.productPrice = productPrice;
+		
+		add(new Link("/products/"+ productID).withSelfRel());
+		add(linkTo(methodOn(ProductController.class).updateProductUsingJson(new Product())).withRel("update"));
+		add(linkTo(methodOn(ProductController.class).getReviewsForProduct(productID)).withRel("Reviews"));
+		add(linkTo(methodOn(ProductController.class).deleteProduct(productID)).withRel("delete"));
+		// add(new Link("/products/delete"+ productID).withRel("delete"));
+		// Json: "delete": {"href":"/products/delete/1"}
+	}
+}
+
+/* ProductReviews */
+public class ProductReviews extends ResourceSupport {
+	private Long ID;
+	private Long productID;
+	private String review;
+	
+	public ProductReviews(Long id, Long productID, String review) {
+		this.ID = id;
+		this.productID = productID;
+		this.review = review;
+		
+		add(linkTo(methodOn(ProductController.class).getProduct(productID)).withRel("product"));
+    add(linkTo(methodOn(ProductController.class).getReviewsForProduct(productID)).withSelfRel());
+	}
+}
+
+/* controller */
+@RestController
+@RequestMapping("/products")
+public class ProductController {
+	@GetMapping("")
+	Resources<Product> getProducts() {
+		Link selfRelLink = ControllerLinkBuilder
+				.linkTo(ControllerLinkBuilder.methodOn(ProductController.class).getProducts()).withSelfRel();
+
+		List<Product> productList = productService.getProducts();
+
+		Resources<Product> resources = new Resources<>(productList);
+		resources.add(selfRelLink);
+		return resources;
+	}
+
+	@GetMapping(value = "/{productId}/reviews")
+	public Resources<ProductReviews> getReviewsForProduct(@PathVariable final long productId) {
+
+		List<ProductReviews> reviews = productService.getProductReviews(productId);
+		return new Resources<ProductReviews>(reviews);
+	}
+}
+
+/* JSON Response */
+{
+	"productId": 1,
+	"productName":"iPhone",
+	"productPrice":1000,
+	"links": {
+		"self": {"href":"/products/1"},
+		"delete": {"href":"/products/delete/1"}
+		"update": {"href":"/products/1"}
+		"Reviews": {"href":"/products/1/reviews"}
+	}
+}
+
+```
 ### References
 - [Spring Boot REST & Angular + Full Stack Application](https://www.eduonix.com/spring-boot-rest-amp-angular-full-stack-application)
