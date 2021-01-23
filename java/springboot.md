@@ -688,5 +688,212 @@ public class ProductController {
 }
 
 ```
+
+### JWT (Json Web Token)
+- With JWT we can validate the authenticity of the token. But JWT doesn't tell the authenticity of the sender or the receiver.
+- Flow
+1. Client sends username/password for authenication
+2. Server validates the authentication
+3. Server creates a JWT token and sends it as part of response body
+4. Client stores that token in local storage.
+5. For subsequent requests clients sends that token as part of request headers
+6. Server validates JWT Token and serves the request
+
+- JWT Format
+	- Header + Payload + Signature
+
+### OAuth 
+- Term: Protected Resource, Resource Owner, Client Application, Authorization Server, Auth Code, Access Token
+- OAuth Flow
+1. Client registers with Auth Server and gets Client ID, Secret
+2. Resource owner wants the Client to access Protected Resource (Google Drive), so Client will make a webservice call to Google Auth server using the Client ID (https://authapi?client_id=1234&redirect_uri=<URI>&response_type=token)
+3. User will be prompted with Authorization prompt. User will login and authorize the Client
+4. Server will redirect the user to the redirect URI, along with Auth Code
+5. Client will then pass that Auth Code along with its Secret to goole authorization server to get Access token
+6. Client App then makes requests to google drive on behalf of User by sending the Access Token along with requests.
+
+- Implementing Resource Server
+```java
+/* pom.xml */
+<dependency>
+	<groupId>org.springframework.security.oauth.boot</groupId>
+	<artifactId>spring-security-oauth2-autoconfigure</artifactId>
+	<version>2.1.8.RELEASE</version>
+</dependency>
+
+/* protected resource */
+@Controller
+public class ImageController {
+	@RequestMapping(value="/user/getImageList", produces="application/json")
+	@ReponseBody
+	public List<Image> getEmployeesList() {
+		List<Image> images = new ArrayList<>();
+
+		Image img1 = new Image();
+		img1.setImgId("1345");
+		img1.setImgName("Image 1");
+
+		Image img2 = new Image();
+		img2.setImgId("1752");
+		img2.setImgName("Image 2");
+
+		images.add(img1);
+		images.add(img2);
+
+		return images;
+	}
+}
+
+/* Rescource Server */
+@Configuration
+@EnableResourceServer
+class ResourceServer extends ResourceServerConfigurerAdapter {
+	// Here we are configuring the URL pattern and the access scope as 'read'.
+	// Client application can send requests that match with this URL pattern to get read only access to that resource
+	@Override
+	public void configure(HttpSecurity http) throws Exception {
+		http.requestMatchers().antMatchers("/user/getImagesList/**")
+			.and().authorizeRequests().anyRequest()
+			.access("#oauth2.hasScope('read')");
+	}
+}
+
+```
+
+- Implementing Auth Server
+```java
+/* Auth Server */
+@Configuration
+@EnableAuhorizationServer
+class AuthServerConfig extends AuhorizationServerConfigurerAdapter {
+	// Here we are registering the client details with the Auth server
+	@Override
+	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+		clients.inMemory().withClient("photoclient").secret("{noop}clientsecret")
+			.authorizedGrantTypes("authorization_code")
+			.scopes("read").authorities("CLIENT")
+			.redirectUris("http://localhost:8081/showImages");
+	}
+}
+
+/* SecurityConfig */
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+			web.ignoring().antMatchers("/resources/**");
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().antMatchers("/").permitAll()
+			.antMatchers("/user/getImageList").hasRole("ADMIN")
+			.anyRequest().authenticated().and().formLogin()
+			.permitAll().and().logout().permitAll();
+		http.csrf().disable();
+	}
+
+	@Override
+	public void configure() throws Exception {
+		authenticationMgr.inMemoryAuthentication().withUser("admin")
+			.password("{noop}admin")
+			.authorities("ROLE_ADMIN");
+	}
+
+}
+
+```
+
+- Implementing Client Application
+```java
+/* ClientConfig */
+@EnableOAuth2Client
+@Configuration
+class ClientConfig extends ResourceServerConfigurerAdapter {
+	@Bean
+	protected AuthorizationCodeAccessTokenProvider provider() {
+		AuthorizationCodeAccessTokenProvider provider = new AuthorizationCodeAccessTokenProvider();
+		provider.setStateMandatory(false);
+		return provider;
+	} 
+}
+
+/* controller */
+@Controller
+public class ImageController {
+	@RequestMapping(value = "/getImages", method = RequestMethod.GET)
+	public ModelAndView getImageInfo() {
+		return new ModelAndView("getImages");
+	}
+
+	@RequestMapping(value = "/showImages", method = RequestMethod.GET)
+	public ModelAndView showImages(@RequestParam("code") String code) throws JsonProcessingException, IOException {
+		// Use Auth Code to get Access Token from the Auth Server
+		// Use RestTemplate to send request to protected resource using the Access Token
+		System.out.println("Authorization Ccode------" + code);
+
+		RestTemplate restTemplate = new RestTemplate();
+
+		OAuth2ProtectedResourceDetails details = resourceDetails();
+		AccessTokenRequest accessTokenRequest = new DefaultAccessTokenRequest();
+		accessTokenRequest.setAuthorizationCode(code);
+
+		OAuth2AccessToken oAuth2AccessToken = provider.obtainAccessToken(details, accessTokenRequest);
+
+		System.out.println("Access Token Response ---------" + oAuth2AccessToken);
+
+		String url = "http://localhost:8080/user/getImagesList";
+
+		// Use the access token for authentication
+		HttpHeaders headers1 = new HttpHeaders();
+		headers1.add("Authorization", "Bearer " + oAuth2AccessToken);
+		HttpEntity<String> entity = new HttpEntity<>(headers1);
+
+		ResponseEntity<Image[]> images = restTemplate.exchange(url, HttpMethod.GET, entity, Image[].class);
+		
+		Image[] imageArray = images.getBody();
+
+		ModelAndView model = new ModelAndView("showImages");
+		System.out.println("Images : "+ Arrays.asList(imageArray));
+		model.addObject("images", Arrays.asList(imageArray));
+		return model;
+	}
+
+	private OAuth2ProtectedResourceDetails resourceDetails() {
+		AuthorizationCodeResourceDetails authorizationCodeResourceDetails = new AuthorizationCodeResourceDetails();
+		authorizationCodeResourceDetails.setClientId("photoclient");
+		authorizationCodeResourceDetails.setClientSecret("clientsecret");
+		authorizationCodeResourceDetails.setAccessTokenUri("http://localhost:8080/oauth/token");
+		authorizationCodeResourceDetails.setPreEstablishedRedirectUri("http://localhost:8081/showImages");
+		return authorizationCodeResourceDetails;
+	}
+}
+
+/* getImages */
+<h3 style="color: red;">Add New Image</h3>
+
+<div id="addImage">
+	<form action="http://localhost:8080/oauth/authorize"
+		method="post" modelAttribute="emp">
+			 <input type="hidden" type="text" name="response_type" value="code" /> 
+			 <input type="hidden" type="text" name="client_id" value="photoclient" />
+			 <input type="hidden" type="text" name="redirect_uri" value="http://localhost:8081/showImages" />
+			 <input type="SUBMIT" value="Get Protected Resource!" />
+	</form>
+</div>
+
+/* showImages */
+<h3 style="color: red;">Show All Images</h3>
+<ul>
+${images}
+</ul>
+
+/* application.properties */
+spring.mvc.view.prefix:/WEB-INF/jsp/
+spring.mvc.view.suffix:.jsp
+server.port:8081
+```
 ### References
 - [Spring Boot REST & Angular + Full Stack Application](https://www.eduonix.com/spring-boot-rest-amp-angular-full-stack-application)
