@@ -59,5 +59,31 @@ public void test1() {}
 ```
 5. Run the program by using TestNG. (Run As > TestNG Test)
 
+### testng.xml
+- In TestNG, you can define multiple test cases in a single class whereas, in Java, you can define only one test in a single class in the main() method.
+- You can trigger all the test cases from a single file known as xml file. Xml file is the heart of TestNG framework.
+- How to create a xml file
+	- Right click on the project. Move your cursor down, and you will see TestNG and then click on the Convert to TestNG.
+- We do not need to run the java files individually. We have to run the XML file which will automatically execute all the test cases as we have configured all the class files inside the XML file that are containing test cases.
+	- Right click on the testng.xml file and then move down to the Run As and then click on the TestNG Suite.
+- testng.xml
+```xml
+<suite name="">  
+  
+	<test name="">  
+  <classes>  
+		<class name=""/>  
+  </classes>  
+  </test>
+
+ 	<test name="">  
+  <classes>  
+		<class name=""/>
+  </classes>  
+  </test>  
+
+</suite>
+```
+
 ### References
 - [TestNG Tutorial (Software Testing Mentor)](https://www.youtube.com/watch?v=KegGpNMhGF0&list=PLL34mf651faMJ3uO8RNEh1GM5uLVXWq2Z)
