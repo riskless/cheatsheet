@@ -47,7 +47,17 @@
 - References
 	- http://testng.org/doc/
 	- https://github.com/cbeust/testng-eclipse/
-
+### Running test cases in TestNG without java compiler
+- steps
+1. Create the java project
+2. create the Java class
+3. If you install TestNG framework or TestNG library, then you do not need to compile on Java compiler as TestNG itself is a java compiler that compiles the test cases. In order to achieve this, we need to install the TestNG plug-in and then add the TestNG plug-in in a project.
+4. Create a simple program
+```java
+@Test
+public void test1() {}
+```
+5. Run the program by using TestNG. (Run As > TestNG Test)
 
 ### References
 - [TestNG Tutorial (Software Testing Mentor)](https://www.youtube.com/watch?v=KegGpNMhGF0&list=PLL34mf651faMJ3uO8RNEh1GM5uLVXWq2Z)
