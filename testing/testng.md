@@ -47,3 +47,7 @@
 - References
 	- http://testng.org/doc/
 	- https://github.com/cbeust/testng-eclipse/
+
+
+### References
+- [TestNG Tutorial (Software Testing Mentor)](https://www.youtube.com/watch?v=KegGpNMhGF0&list=PLL34mf651faMJ3uO8RNEh1GM5uLVXWq2Z)
