@@ -63,8 +63,7 @@ Given()
 - Then()
 	- Your assert and matcher conditions go here
 
-### Example
-- Getting the response Body
+###  Getting the response Body
 ```java
 public static void getResponseBody() {
 	given()
@@ -76,10 +75,8 @@ public static void getResponseBody() {
 
 // log().all()
 // Once all the response is fetched, log response, headers, essentially everything that the request returns to you.
-```
 
-- For using query param
-```java
+/* For using query param */
 public static void getResponseBody(){
  
 	given()
@@ -94,7 +91,7 @@ public static void getResponseBody(){
 // this helps us to extract only the body of the response.
 ```
 
-- Getting the response status code
+### Getting the response status code
 ```java
 final static String url="http://demo.guru99.com/V4/sinkministatement.php?CUSTOMER_ID=68195&PASSWORD=1234!&Account_No=1";
 
