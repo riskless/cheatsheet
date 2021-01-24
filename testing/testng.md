@@ -73,7 +73,7 @@ public void test1() {}
 		<classes>  
 			<class name=""/>  
 		</classes>  
-  </test>
+  	</test>
  	<test name="">  
 		<classes>  
 			<class name=""/>
