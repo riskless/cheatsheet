@@ -67,21 +67,18 @@ public void test1() {}
 - We do not need to run the java files individually. We have to run the XML file which will automatically execute all the test cases as we have configured all the class files inside the XML file that are containing test cases.
 	- Right click on the testng.xml file and then move down to the Run As and then click on the TestNG Suite.
 - testng.xml
-```xml
+```html
 <suite name="">  
-  
 	<test name="">  
-  <classes>  
-		<class name=""/>  
-  </classes>  
+		<classes>  
+			<class name=""/>  
+		</classes>  
   </test>
-
  	<test name="">  
-  <classes>  
-		<class name=""/>
-  </classes>  
-  </test>  
-
+		<classes>  
+			<class name=""/>
+		</classes>  
+	</test>  
 </suite>
 ```
 
