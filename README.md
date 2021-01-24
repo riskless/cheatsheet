@@ -1,7 +1,7 @@
 # Building a cheat sheet for developers
-1. Frontend
-2. Backend
-3. Java
-4. Database
-5. Testing
-6. Others
+### Frontend
+### Backend
+### Java
+### Database
+### Testing
+### Others
