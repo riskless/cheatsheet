@@ -352,7 +352,18 @@ SELECT * FROM students WHERE id > ALL(
 );
 
 ```
+### Views
+- By creating a View, you can represent data from one or more tables with limitations. 
+- You can view the view, just as any other table (example, by using SELECT).
+-	A view would allow specific user to view only certain details of tables.
+-	Helps in displaying aggregated data from multiple tables.
+```js
+// Syntax
+CREATE VIEW <view_name> AS <Query>;
 
+CREATE VIEW my_view AS
+SELECT studentname FROM students WHERE age=28;
+```
 ### Functions
 - Functions or Stored procedures are set of statements that are compiled and stored in the database, so that we can run them using the function name. 
 - Advantages
@@ -443,7 +454,31 @@ END LOOP ;
 // Drop Function: 
 DROP FUNCTION addTen;
 ```
+### Triggers
+- A Trigger is an automatic Function call when a certain database event occurs.
+```js
+// Syntax:
+CREATE TRIGGER <trigger_Name> (BEFORE | AFTER | INSTEAD OF) (INSERT | DELETE | UPDATE | TRUNCATE) ON <table_name>
+FOR EACH (ROW | STATEMENT)
+EXECUTE PROCEDURE <trigger_function>;
 
+// Create Table to Record Joining Date:
+CREATE TABLE student_joining_date(
+   Stu_ID INT NOT NULL,
+   DOJ TEXT NOT NULL
+);
+
+// Create Trigger Function:
+CREATE OR REPLACE FUNCTION addJoiningDate() RETURNS TRIGGER AS $$
+   BEGIN
+      INSERT INTO student_joining_date(Stu_ID, DOJ) VALUES (new.ID, current_timestamp);
+      RETURN NEW;
+   END;
+$$ LANGUAGE plpgsql;
+
+// Create Trigger:
+CREATE TRIGGER sometrigger AFTER INSERT ON students
+FOR EACH ROW EXECUTE PROCEDURE addjoiningdate();
 
 ### References
 - SQL Commands
