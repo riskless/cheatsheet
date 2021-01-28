@@ -566,7 +566,6 @@ document.write(
 observable.publish("IBM at $145.33");
 ```
 
-######################################################################
 ### Method Notation in Object Property Definitions
 ```js
 // ES5 WAY
