@@ -225,7 +225,7 @@ let val1 = 1, val2 = 2;
 document.write(`Val2 : ${val2}<br />`);
 ```
 
-*** Classes
+### Classes
 ```js
 // Classes now work much like they do in other languages
 class Mammal{
