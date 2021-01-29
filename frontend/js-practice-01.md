@@ -32,4 +32,4 @@
 	- Store bookmark data in the browser using local storage
 
 ### Flowchart
-![Markdown Logo](https://markdown-here.com/img/icon256.png)
+![Flowchart](images/flowchart-1.png)
