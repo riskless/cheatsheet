@@ -33,3 +33,8 @@
 
 ### Flowchart
 ![Flowchart](images/flowchart-1.png)
+![Flowchart](images/flowchart-2.png)
+![Flowchart](images/flowchart-2.png)
+
+### Architecture
+![Architecture](images/architecture.png)
