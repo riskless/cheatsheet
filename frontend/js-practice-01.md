@@ -38,3 +38,6 @@
 
 ### Architecture
 ![Architecture](images/architecture.png)
+
+### References
+- [The Complete JavaScript Course](https://www.udemy.com/course/the-complete-javascript-course/)
