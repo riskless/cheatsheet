@@ -40,6 +40,45 @@
 ### Architecture
 ![Architecture](images/mapty-architecture.png)
 
+```js
+/* Workout */
+class Workout {
+	constructor() {}
+	_setDescription() {}
+	click() {}
+}
+
+/* Running */
+class Running extends Workout {
+	constructor() {}
+	calcPace() {}
+}
+
+/* Cycling */
+class Cycling extends Workout {
+	constructor() {}
+	calcSpeed() {}
+}
+
+/* App */
+class App {
+	constructor() {}
+	_getPosition() {}
+	_loadMap() {}
+	_showForm() {}
+	_hideForm() {}
+	_toggleElevationField() {}
+	_newWorkout() {}
+	_renderWorkoutMarker() {}
+	_renderWorkout() {}
+	_moveToPopup() {}
+	_setLocalStorage() {}
+	_getLocalStorage() {}
+	reset() {}
+}
+const app = new App();
+```
+
 
 ### References
 - [The Complete JavaScript Course](https://www.udemy.com/course/the-complete-javascript-course/)
