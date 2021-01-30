@@ -79,6 +79,71 @@ class App {
 const app = new App();
 ```
 
+```html
+<head>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap"
+		rel="stylesheet"
+	/>
+
+	<link rel="stylesheet" href="style.css" />
+
+	<link
+		rel="stylesheet"
+		href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+		crossorigin=""
+	/>
+	<script
+		defer
+		src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+		integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+		crossorigin=""
+	></script>
+
+	<script defer src="script.js"></script>
+</head>
+<body>
+	<div class="sidebar">
+		<ul class="workouts">
+			<form class="form hidden">
+				<div class="form__row">
+					<select class="form__input form__input--type">
+						<option value="running">Running</option>
+						<option value="cycling">Cycling</option>
+					</select>
+				</div>
+				<div class="form__row">
+					<input class="form__input form__input--distance" placeholder="km" />
+				</div>
+				<div class="form__row">
+					<input
+						class="form__input form__input--duration"
+						placeholder="min"
+					/>
+				</div>
+				<div class="form__row">
+					<input
+						class="form__input form__input--cadence"
+						placeholder="step/min"
+					/>
+				</div>
+				<div class="form__row form__row--hidden">
+					<input
+						class="form__input form__input--elevation"
+						placeholder="meters"
+					/>
+				</div>
+				<button class="form__btn">OK</button>
+			</form>
+		</ul>
+
+		<p class="copyright">PRACTICE MAKES PERFECT</p>
+	</div>
+
+	<div id="map"></div>
+</body>
+```
 
 ### References
 - [The Complete JavaScript Course](https://www.udemy.com/course/the-complete-javascript-course/)
