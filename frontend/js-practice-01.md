@@ -38,7 +38,7 @@
 ![Flowchart](images/mapty-flowchart.png)
 
 ### Architecture
-![Flowchart](images/mapty-archiecture.png)
+![Architecture](images/mapty-architecture.png)
 
 
 ### References
