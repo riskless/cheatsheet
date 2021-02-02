@@ -192,6 +192,246 @@ export default new RecipeView();
 	</di>
 </body>
 ```
+### Development
+- Intalling parcel for Bundling
+```js
+/* package.json */
+{
+	"script": {
+		"start": "parcel index.html",
+		"build": "parcel build index.html --dist-dir ./dist"
+	},
+  "devDependencies": {
+    "parcel": "^2.0.0-beta.1",
+    "sass": "^1.26.10"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "regenerator-runtime": "^0.13.7"
+  }
+}
+```
+
+- Loading a Recipe from API
+```js
+/* controller */
+import * as model from './model.js';
+import recipeView from './views/recipeView.js';
+
+const controlRecipes = async function () {
+	try {
+		const id = window.location.hash.slice(1); // #id
+		console.log(id);
+		
+		if(!id) return;
+
+		// Loading recipe
+		await model.loadRecipe(id);
+
+		// Rendering recipe
+		recipeView.render(model.state.recipe);
+
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+// Listening for load and hashchange events
+window.addEventListener('hashchange', controlRecipes);
+window.addEventListener('load', controlRecipes);
+// ['hashchange','load'].forEach(ev => window.addEventListener(ev, controlRecipes));
+
+/* model */
+import { API_URL, KEY } from './config.js';
+import { getJSON } from './helpers.js';
+
+export const state = {
+  recipe: {},
+
+export const loadRecipe = async function (id) {
+  try {
+    const data = await getJSON(`${API_URL}${id}?key=${KEY}`);
+    const {recipe} = data.data;
+
+		recipe = {
+			id: recipe.id,
+			title: recipe.title,
+			publisher:recipe.publisher,
+			sourceUrl: recipe.source_url,
+			image:recipe.image_url,
+			servings: recipe..servings,
+			cookingTime: recipe.cooking_time,
+			ingredients:recipe.ingredients
+		};
+    console.log(state.recipe);
+  } catch (err) {
+    // Temp error handling
+    console.error(`${err}`);
+  }
+};
+
+/* RecipeView */
+import Fraction from 'fractional'; 
+class RecipeView {
+	#parentElement = document.querySelector('.recipe');
+	#data;
+
+	render(data) {
+		this.#data = data;
+
+		//-- fractional (Number formatting)
+		// npm install fractional
+		// 0.5 -> 1/2
+		const markup = `${this.#data.title} ${quantity ? new Fraction(quantity}.toString() : ''}`;
+		this.#parentElement.innerHTML = '';
+		this.#parentElement.insertAdjacentHTML('afterbegin', markup);
+	}
+}
+export default new RecipeView()
+
+/* helpers */
+import { TIMEOUT_SEC } from './config.js';
+
+const timeout = function (s) {
+  return new Promise(function (_, reject) {
+    setTimeout(function () {
+      reject(new Error(`Request took too long! Timeout after ${s} second`));
+    }, s * 1000);
+  });
+};
+
+export const getJSON = async function (url) {
+  try {
+		const fetchPro = fetch(url);
+    const res = await Promise.race([fetchPro, timeout(TIMEOUT_SEC)]);
+    const data = await res.json();
+
+		if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+    return data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* config */
+export const API_URL = 'https://forkify-api.herokuapp.com/api/v2/recipes/';
+export const TIMEOUT_SEC = 10;
+export const KEY = '<YOUR_KEY>';
+```
+- Spinner
+```js
+/* controller */
+const controlRecipes = async function () {
+	try {
+		// Spinner
+		recipeView.renderSpinner();
+
+		// Loading recipe
+		// Rendering recipe
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+/* RecipeView */
+import icons from 'url:../../img/icons.svg'; // Parcel 2
+class RecipeView {
+	renderSpinner() {
+		const markup = `
+			<div class="spinner">
+				<svg>
+					<use href="${icons}#icon-loader"></use>
+				</svg>
+			</div>
+		`;
+		this._clear();
+		this._parentElement.insertAdjacentHTML('afterbegin', markup);
+	}
+}
+```
+
+- Event Handlers in MVC (Publisher-Subscriber Pattern)
+	- Events should be handled in the controller (otherwise we would have application logic in the view)
+	- Events should be listened for in the view (otherwise we would need DOM elements in the controller)
+	- Publisher: Code that knows when to react
+	- Subscriber: Code that wants to react
+	- Subscribe to publisher by passing in the subscriber function
+
+```js
+/* controller */
+const init = function () {
+  // controlRecipes will be passed into addHandlerRender when program starts
+  recipeView.addHandlerRender(controlRecipes);
+};
+
+/* RecipeView */
+// addHandlerRender listens for events (addEventListener), and uses controlRecipes as callback
+addHandlerRender(handler) {
+	['hashchange','load'].forEach(ev => window.addEventListener(ev, handler));
+}
+```
+
+- Error Handling
+```js
+/* controller */
+const controlRecipes = async function () {
+  try {
+    // Loading recipe
+    // Rendering recipe
+  } catch (err) {
+    recipeView.renderError();
+    console.error(err);
+  }
+};
+
+/* model */
+export const loadRecipe = async function (id) {
+  try {
+  } catch (err) {
+    console.error(`${err}`);
+    throw err;
+  }
+};
+
+/* RecipeView */
+import icons from 'url:../../img/icons.svg'; // Parcel 2
+class RecipeView {
+	_errorMessage = 'We could not find that recipe. Please try another one!';
+	_message = 'Success';
+
+	// error message
+  renderError(message = this._errorMessage) {
+    const markup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+	
+	// success message
+  renderMessage(message = this._message) {
+    const markup = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${icons}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+}
+```
 
 ### References
 - [The Complete JavaScript Course](https://www.udemy.com/course/the-complete-javascript-course/)
