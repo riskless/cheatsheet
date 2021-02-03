@@ -432,6 +432,318 @@ class RecipeView {
   }
 }
 ```
+- search results
+```js
+/* model */
+export const state = {
+  recipe: {},
+  search: {
+    query: '',
+    results: []
+  }
+};
 
+export const loadSearchResults = async function (query) {
+  try {
+		state.search.query = query;
+
+		const data = await getJSON(`${API_URL}?search=${query}`);
+    console.log(data);
+
+		state.search.results = data.data.recipes.map(rec => {
+			return {
+        id: rec.id,
+        title: rec.title,
+        publisher: rec.publisher,
+        image: rec.image_url
+			};
+		});
+
+		console.log(state.search.results);
+  } catch (err) {
+    throw err;
+  }
+};
+
+/* controller */
+import searchView from './views/searchView.js';
+
+const controlSearchResults = async function () {
+  try {
+	  // Get search query
+    const query = searchView.getQuery();
+    if (!query) return;
+
+		// Load search results
+		await model.loadSearchResults(query);
+
+		// Render results
+		resultsView.render(model.state.search.results);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const init = function () {
+  searchView.addHandlerSearch(controlSearchResults);
+};
+
+/* SearchView */
+class SearchView {
+  _parentEl = document.querySelector('.search');
+
+  getQuery() {
+    const query = this._parentEl.querySelector('.search__field').value;
+    this._clearInput();
+    return query;
+  }
+
+  _clearInput() {
+    this._parentEl.querySelector('.search__field').value = '';
+  }
+
+  addHandlerSearch(handler) {
+    this._parentEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      handler();
+    });
+  }
+}
+export default new SearchView();
+
+/* ResultsView */
+import View from './View.js';
+
+class ResultsView extends View {
+  _parentElement = document.querySelector('.results');
+  _errorMessage = 'No recipes found for your query! Please try again ;)';
+  _message = '';
+
+	_generateMarkup() {
+		console.log(this._data);
+		return this._data.map(this._generateMarkupPreview).join('');
+	}
+
+  _generateMarkupPreview(result) {
+		
+    return `
+			<li class="preview">
+				<a class="preview__link preview__link--active" href="#23456">
+					<figure class="preview__fig">
+						<img src="${result.image}" alt="${result.title}" />
+					</figure>
+					<div class="preview__data">
+						<h4 class="preview__title">${result.title}</h4>
+						<p class="preview__publisher">${result.publisher}</p>
+						<div class="preview__user-generated">
+							<svg>
+								<use href="${icons}#icon-user"></use>
+							</svg>
+						</div>
+					</div>
+				</a>
+			</li>
+		`;
+  }
+}
+export default new ResultsView();
+
+/* View */
+import icons from 'url:../../img/icons.svg'; // Parcel 2
+export default class View {
+  _data;
+
+  render(data) {
+		if (!data || (Array.isArray(data) && data.length === 0))
+			return this.renderError();
+    this._data = data;
+    const markup = this._generateMarkup();
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  _clear() {
+    this._parentElement.innerHTML = '';
+  }
+
+	renderSpinner() {
+		const markup = `
+			<div class="spinner">
+				<svg>
+					<use href="${icons}#icon-loader"></use>
+				</svg>
+			</div>
+		`;
+		this._clear();
+		this._parentElement.insertAdjacentHTML('afterbegin', markup);
+	}
+
+	// error message
+  renderError(message = this._errorMessage) {
+    const markup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${icons}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+	
+	// success message
+  renderMessage(message = this._message) {
+    const markup = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${icons}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+    this._clear();
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+}
+```
+
+- Pagination
+```js
+/* model */
+export const state = {
+  recipe: {},
+  search: {
+    page: 1,
+    resultsPerPage: RES_PER_PAGE
+  }
+};
+
+export const loadSearchResults = async function (query) {
+  try {
+		state.search.page = 1;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page;
+
+  const start = (page - 1) * state.search.resultsPerPage; // 0
+  const end = page * state.search.resultsPerPage; // 9
+
+  return state.search.results.slice(start, end);
+};
+
+/* PaginationView */ 
+class PaginationView extends View {
+  _parentElement = document.querySelector('.pagination');
+
+  addHandlerClick(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--inline');
+      if (!btn) return;
+
+      const goToPage = +btn.dataset.goto;
+      handler(goToPage);
+    });
+  }
+
+  _generateMarkup() {
+    const curPage = this._data.page;
+    const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage);
+
+    // Page 1, and there are other pages
+    if (curPage === 1 && numPages > 1) {
+      return `
+        <button data-goto="${
+          curPage + 1
+        }" class="btn--inline pagination__btn--next">
+          <span>Page ${curPage + 1}</span>
+          <svg class="search__icon">
+            <use href="${icons}#icon-arrow-right"></use>
+          </svg>
+        </button>
+      `;
+    }
+
+    // Last page
+    if (curPage === numPages && numPages > 1) {
+      return `
+        <button data-goto="${
+          curPage - 1
+        }" class="btn--inline pagination__btn--prev">
+          <svg class="search__icon">
+            <use href="${icons}#icon-arrow-left"></use>
+          </svg>
+          <span>Page ${curPage - 1}</span>
+        </button>
+      `;
+    }
+
+    // Other page
+    if (curPage < numPages) {
+      return `
+        <button data-goto="${
+          curPage - 1
+        }" class="btn--inline pagination__btn--prev">
+          <svg class="search__icon">
+            <use href="${icons}#icon-arrow-left"></use>
+          </svg>
+          <span>Page ${curPage - 1}</span>
+        </button>
+        <button data-goto="${
+          curPage + 1
+        }" class="btn--inline pagination__btn--next">
+          <span>Page ${curPage + 1}</span>
+          <svg class="search__icon">
+            <use href="${icons}#icon-arrow-right"></use>
+          </svg>
+        </button>
+      `;
+    }
+
+    // Page 1, and there are NO other pages
+    return '';
+  }
+}
+export default new PaginationView();
+
+/* controller */
+import searchView from './views/PaginationView.js';
+
+const controlSearchResults = async function () {
+  try {
+	  // Get search query
+		// Load search results
+
+		// Render results
+		//resultsView.render(model.state.search.results);
+		resultsView.render(model.getSearchResultsPage());
+
+    // Render initial pagination buttons
+    paginationView.render(model.state.search);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const controlPagination = function (goToPage) {
+  // 1) Render NEW results
+  resultsView.render(model.getSearchResultsPage(goToPage));
+
+  // 2) Render NEW pagination buttons
+  paginationView.render(model.state.search);
+};
+
+const init = function () {
+  paginationView.addHandlerClick(controlPagination);
+};
+```
 ### References
 - [The Complete JavaScript Course](https://www.udemy.com/course/the-complete-javascript-course/)
