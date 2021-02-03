@@ -367,7 +367,7 @@ export class AppModule { }
 </tr>
 ```
 
-### component output properties
+### component input properties
 - Passing data from the parent component to the child component 
 ```js
 /* child component = nested component */
