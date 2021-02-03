@@ -313,28 +313,28 @@ class UserControllerTest {
 		MockitoAnnotations.initMocks(this);
 		
 		userDto = new UserDto();
-        userDto.setFirstName("Harold");
-        userDto.setLastName("Kim");
-        userDto.setEmail("test@test.com");
-        userDto.setEmailVerificationStatus(Boolean.FALSE);
-        userDto.setEmailVerificationToken(null);
-        userDto.setUserId(USER_ID);
-        userDto.setAddresses(getAddressesDto());
-        userDto.setEncryptedPassword("xcf58tugh47");
+		userDto.setFirstName("Harold");
+		userDto.setLastName("Kim");
+		userDto.setEmail("test@test.com");
+		userDto.setEmailVerificationStatus(Boolean.FALSE);
+		userDto.setEmailVerificationToken(null);
+		userDto.setUserId(USER_ID);
+		userDto.setAddresses(getAddressesDto());
+		userDto.setEncryptedPassword("xcf58tugh47");
 	}
 
 	@Test
 	final void testGetUser() {
-	    when(userService.getUserByUserId(anyString())).thenReturn(userDto);	
-	    
-	    UserRest userRest = userController.getUser(USER_ID);
-	    
-	    assertNotNull(userRest);
-	    assertEquals(USER_ID, userRest.getUserId());
-	    assertEquals(userDto.getFirstName(), userRest.getFirstName());
-	    assertEquals(userDto.getLastName(), userRest.getLastName());
-	    assertTrue(userDto.getAddresses().size() == userRest.getAddresses().size());
-	}
+		when(userService.getUserByUserId(anyString())).thenReturn(userDto);	
+		
+		UserRest userRest = userController.getUser(USER_ID);
+		
+		assertNotNull(userRest);
+		assertEquals(USER_ID, userRest.getUserId());
+		assertEquals(userDto.getFirstName(), userRest.getFirstName());
+		assertEquals(userDto.getLastName(), userRest.getLastName());
+		assertTrue(userDto.getAddresses().size() == userRest.getAddresses().size());
+}
 	
 	private List<AddressDTO> getAddressesDto() {
 		AddressDTO addressDto = new AddressDTO();
@@ -361,7 +361,51 @@ class UserControllerTest {
 ```
 
 ### Example (JUnit Integration Test)
-- Testing JWT Tokens and UserId.
+- Testing JWT Tokens and UserId
+```java
+@ExtendWith(SpringExtension.class) // Integration Test
+@SpringBootTest
+class UtilsTest {
+	
+	@Autowired
+	Utils utils;
+
+	@BeforeEach
+	void setUp() throws Exception {
+	}
+
+	@Test
+	final void testGenerateUserId() {
+		String userId = utils.generateUserId(30);
+		String userId2 = utils.generateUserId(30);
+		
+		assertNotNull(userId);
+		assertNotNull(userId2);
+		
+		assertTrue(userId.length() == 30);
+		assertTrue( !userId.equalsIgnoreCase(userId2) );
+	}
+	
+	@Test
+	final void testHasTokenNotExpired() {
+		String token = utils.generateEmailVerificationToken("4yr65hhyid84");
+		assertNotNull(token);
+		
+		boolean hasTokenExpired = Utils.hasTokenExpired(token);
+		assertFalse(hasTokenExpired);
+	}
+	
+	@Test
+	//	@Disabled
+	final void testHasTokenExpired()
+	{
+		String expiredToken = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0MUB0ZXN0LmNvbSIsImV4cCI6MTUzMjc3Nzc3NX0.cdudUo3pwZLN9UiTuXiT7itpaQs6BgUPU0yWbNcz56-l1Z0476N3H_qSEHXQI5lUfaK2ePtTWJfROmf0213UJA";
+		boolean hasTokenExpired = Utils.hasTokenExpired(expiredToken);
+		
+		assertTrue(hasTokenExpired);
+	}
+}
+```
 
 ### References
 - [JUnit Tutorial](https://www.tutorialspoint.com/junit/index.htm)
