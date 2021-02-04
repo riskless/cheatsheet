@@ -121,8 +121,7 @@ public class UsersController {
 }
 ```
 
-######################################################################
-*** Building an Account Manageemnt Microservice
+### Building an Account Manageemnt Microservice
 ```java
 /* depenndencies */
 spring-boot-starter-web
@@ -189,6 +188,6 @@ server.port=8011
 eureka.client.serviceUrl.defaultZone = http://localhost:8010/eureka
 
 /* Access Microservices via API Gateway */
-http;//localhost:8011/users-ws/users
-http;//localhost:8011/account-ws/account
+http://localhost:8011/users-ws/users
+http://localhost:8011/account-ws/account
 ```
