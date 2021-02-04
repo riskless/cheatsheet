@@ -468,6 +468,19 @@ export const loadSearchResults = async function (query) {
 /* controller */
 import searchView from './views/searchView.js';
 
+const controlRecipes = async function () {
+  try {
+    // Update results view to mark selected search result
+    resultsView.update(model.getSearchResultsPage());
+
+    // Updating bookmarks view
+    // Loading recipe
+    // Rendering recipe
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 const controlSearchResults = async function () {
   try {
 	  // Get search query
@@ -525,10 +538,11 @@ class ResultsView extends View {
 	}
 
   _generateMarkupPreview(result) {
-		
+		const id = window.location.hash.slice(1);
+
     return `
 			<li class="preview">
-				<a class="preview__link preview__link--active" href="#23456">
+				<a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#$result.id}">
 					<figure class="preview__fig">
 						<img src="${result.image}" alt="${result.title}" />
 					</figure>
@@ -744,6 +758,81 @@ const controlPagination = function (goToPage) {
 const init = function () {
   paginationView.addHandlerClick(controlPagination);
 };
+```
+
+- Updating Recipe Servings
+```js
+/* controller */
+const controlServings = function (newServings) {
+// Update the recipe servings (in state)
+	model.updateServings(newServings);
+
+	// Update the recipe view
+	//recipeView.render(model.state.recipe);
+	recipeView.render(model.state.recipe); // no flickering
+};
+
+const init = function () {
+  recipeView.addHandlerUpdateServings(controlServings);
+};
+
+/* model */
+export const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
+    // newQt = oldQt * newServings / oldServings // 2 * 8 / 4 = 4
+  });
+
+  state.recipe.servings = newServings;
+};
+
+/* RecipeView */
+addHandlerUpdateServings(handler) {
+	this._parentElement.addEventListener('click', function (e) {
+		const btn = e.target.closest('.btn--update-servings');
+		if (!btn) return;
+		const { updateTo } = btn.dataset;
+		if (+updateTo > 0) handler(+updateTo);
+	});
+}
+
+_generateMarkup() {
+	return `
+		<button class="btn--tiny btn--update-servings" data-update-to="${this._data.servings - 1}">
+		<button class="btn--tiny btn--update-servings" data-update-to="${this._data.servings + 1}">
+	`;
+}
+
+/* View */
+update(data) {
+	this._data = data;
+	const newMarkup = this._generateMarkup();
+
+	const newDOM = document.createRange().createContextualFragment(newMarkup);
+	const newElements = Array.from(newDOM.querySelectorAll('*'));
+	const curElements = Array.from(this._parentElement.querySelectorAll('*'));
+
+	newElements.forEach((newEl, i) => {
+		const curEl = curElements[i];
+		// console.log(curEl, newEl.isEqualNode(curEl));
+
+		// Updates changed TEXT
+		if (
+			!newEl.isEqualNode(curEl) &&
+			newEl.firstChild?.nodeValue.trim() !== ''
+		) {
+			// console.log('💥', newEl.firstChild.nodeValue.trim());
+			curEl.textContent = newEl.textContent;
+		}
+
+		// Updates changed ATTRIBUES
+		if (!newEl.isEqualNode(curEl))
+			Array.from(newEl.attributes).forEach(attr =>
+				curEl.setAttribute(attr.name, attr.value)
+			);
+	});
+
+}
 ```
 ### References
 - [The Complete JavaScript Course](https://www.udemy.com/course/the-complete-javascript-course/)
