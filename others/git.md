@@ -120,3 +120,95 @@
 - Clone a GitHub Repository
 	- Go to the directory you want to use
 	- git clone https://github.com/riskless/cheatsheet.git
+
+### Branching, HEAD, Checkout, Rebasing, Reverting, Reset, Clean, Solving Merge Conflicts and Mergetool
+- Branching allows you to take a project in your own direction without effecting the main code. You use them to make sure you don't introduce unstable code to the master branch.
+- When you commit a project :
+	- Each file is given a hash code
+	- A tree object that contains those files and the associated hash codes receives a hash code
+	- A commit object stores a reference to the tree and other data like the author, commit comment, a reference to the previous commit and other data.
+- The default branch is called the master. As you make additional commits the current newest version is referred to as the master.
+- If you create a branch you can go in a different direction with the project without effecting the master until you merge. Each branch creates a new pointer to a committed version of files and doesn't make another copy of the files.
+- We can actually create many branches, but be careful while doing this because it can get to be hard to merge multiple branches. A pointer known as HEAD can be pointed at any committed version or to any branch with the checkout command.
+- When you are finished with your branch you can merge back into the master commit and move on. You can also do all of this locally or on a remote.
+- Simple Branch Example
+	- git checkout -b fix20 # Create a branch and switch to it
+		- Same as :
+			- git branch fix20
+			- git checkout fix20
+	- Change AndroidManifest.xml in vim
+	- git commit -a -m 'Added Branch fix20' # Commit the change to the branch, but not to master
+	- git checkout master # Switch to master 
+	- git push origin fix20 # Push the branch to GitHub
+	- git fetch origin # If someone else fetches from the server they get a reference to the branch on the server but not all the files
+	- git checkout -b fix20 origin/fix20 # Retrieves the branch fix20
+	- git branch # Shows all branches
+	- git branch --merged # Shows all merged branches
+	- git branch --no-merged # Shows unmerged branches
+	- git branch -v 
+		- Shows all branches and their last commits
+		- * Points out the branch currently checked out
+	- git merge fix20 # Merge the branch version with the master
+		- git push # Push the change to GitHub
+	- git branch -d fix20 # You can delete merged branches with this
+	- git branch -D fix22 # Deletes unmerged branches
+	- git push origin :fix20 # Deletes the branch on GitHub
+	- git branch -m newBranchName # Renames a branch
+- Multiple Branch Example
+	- git checkout -b fix21 # Create a branch and switch to it
+	- Edit AndroidManifest.xml
+	- git commit -a -m 'Added Branch fix21'
+	- git checkout master # Switch to master 
+	- Look at Manifest to see that nothing changed
+	- git checkout -b 'hotfix' # Create a new branch
+	- git commit -a -m 'Added Hot Fix' # Commit the Hot Fix
+	- git checkout master # Switch to master
+	- git merge hotfix # Merge the hotfix version with the master
+	- git branch -d hotfix # Delete the hotfix branch
+	- git checkout fix21 # Switch to fix21 branch
+	- git checkout master # Make sure you are in master
+	- git merge fix21 # Merges the branch and master if there are no conflicts
+	- If there is a conflict resolve it
+	- git branch -d fix21 # Delete the unneeded branch
+		- git branch -D fix21 # To force delete
+	- git mergetool # You can merge with a graphical tool
+		- Backup : Contents of the file before calling the merge tool
+		- Base : The common ancestor of the files being merged
+		- Local : Version being pointed at by HEAD
+		- Remote : The branch being merged into head
+- Rebasing Example
+	- Rebasing moves a branch to a new ( master / base ) commit. This is also referred to as a fast forward merge. Just never rebase commits that have been pushed to a public repository
+	- git checkout -b fix22
+	- Edit AndroidManifest.xml
+	- git commit -a -m 'Changed the comment to 10'
+	- git checkout -b hotfix
+	- Edit another file other then AndroidManifest
+	- git commit -a -m 'Edited file....'
+	- git checkout master
+	- git merge hotfix
+	- git branch -d hotfix
+	- git checkout fix22
+	- git rebase master # Move branch to new master commit
+	- git checkout master
+	- git merge fix22
+- Reverting Vs. Resetting Example
+	- Some times you want to eliminate a previous commit, but you still want to keep the commit for integrity reasons. Revert undoes changes made in that commit and makes a new commit. Reset actually deletes the commit which can cause problems.
+	- Do something that will be undone
+	- git commit -m 'Made a change that I will undo'
+	- git revert HEAD # You are back to where you started, but the commit was made
+	- Reset eliminates previous commits and you can never get them back. You really should never use it actually.
+	- git reset someFile # Removes a file from the staging area, but leave the working directory unchanged
+	- git reset # Reset the staging area to match the most recent commit while leaving the working directory unchanged
+	- git reset aCommit # Move back to this previous commit, reseting the staging area, but not the working directory
+	- git reset --hard # Reset both the staging area and working directory to match the most recent commit
+	- git reset --hard aCommit # Move back to the commit listed and change staging and working directory
+- Clean Example
+	- Clean removes untracked files from your directory and is undoable.
+	- git clean -n # Shows which files will be removed
+	- git clean -f # Remove untracked files
+	- git clean -df # Remove untracked files and untracked directories in the current directory
+	- git reset --hard # Undoes changes on all tracked files
+	
+### References
+- [Git Video Tutorial](https://www.youtube.com/watch?v=r63f51ce84A)
+- [Git MERGE vs REBASE](https://www.youtube.com/watch?v=CRlGDDprdOQ)
