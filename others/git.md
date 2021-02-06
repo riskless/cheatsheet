@@ -24,59 +24,59 @@
 - git config --list # Show settings
 - git help OR git help [COMMAND] OR git help add
 - Track a directory
-	a. Go to directory
-	b. ls -a shows all files
-	c. git init # Creates the .git directory
+	- Go to directory
+	- ls -a shows all files
+	- git init # Creates the .git directory
 - Start tracking files
-	a. By type : git add *.java
-	b. By name : git add AndroidManifest.xml
+	- By type : git add *.java
+	- By name : git add AndroidManifest.xml
 - Ignore Files
-	a. Create a .gitignore file
-	b. https://github.com/github/gitignore
+	- Create a .gitignore file
+	- https://github.com/github/gitignore
 - git commit -m 'Initial project version' 
-	a. Commits the changes and sets an abbreviated commit message
+	- Commits the changes and sets an abbreviated commit message
 - git status
 	- Shows the state of your files meaning if they are tracked, have been modified and the branch your on.
 - Stage A Modified File
-	a. Change the file and save
-	b. git diff # Shows what you changed, but haven't staged
-	c. git add AndroidManifest.xml # Stage file
-	d. git diff --cached # Shows what has been staged, but not committed 
+	- Change the file and save
+	- git diff # Shows what you changed, but haven't staged
+	- git add AndroidManifest.xml # Stage file
+	- git diff --cached # Shows what has been staged, but not committed 
 - Commit The Changes
-	a. commit # Opens the editor we defined above or vi
-	b. In vi click [ESC] i to enter insert mode
-	c. Type a heading that briefly explains the changes in 50 characters or less
-	d. Describes the original problem that is being addressed
-	e. Describes the specific change being made
-	f. Describes the result of the change
-	g. Describes any future improvements
-	h. Post a closes bug notation Closes-Bug: #1291621
-	i. Hit [ESC] and type wq to save and exit
-	j. git commit -a -m 'Changed comment' # Skips staging and commit message
+	- commit # Opens the editor we defined above or vi
+	- In vi click [ESC] i to enter insert mode
+	- Type a heading that briefly explains the changes in 50 characters or less
+	- Describes the original problem that is being addressed
+	- Describes the specific change being made
+	- Describes the result of the change
+	- Describes any future improvements
+	- Post a closes bug notation Closes-Bug: #1291621
+	- Hit [ESC] and type wq to save and exit
+	- git commit -a -m 'Changed comment' # Skips staging and commit message
 - Remove a File
-	a. rm DeleteMe.txt # If you remove a file it shows as "Changed but not updated"
-	b. git status # If you remove a file it shows as "Changed but not updated"
-	c. git rm DeleteMe.txt
-	d. git status # Shows that the file was deleted
-	e. If you have committed a file to be removed you must add the -f option
-	f. git rm --cached DeleteMe.txt # Keep file, but remove from staging area
-	g. git mv DeleteMe.txt Delete.txt # Renames a file
+	- rm DeleteMe.txt # If you remove a file it shows as "Changed but not updated"
+	- git status # If you remove a file it shows as "Changed but not updated"
+	- git rm DeleteMe.txt
+	- git status # Shows that the file was deleted
+	- If you have committed a file to be removed you must add the -f option
+	- git rm --cached DeleteMe.txt # Keep file, but remove from staging area
+	- git mv DeleteMe.txt Delete.txt # Renames a file
 - Log Commit History
-	a. git log # Shows all of the previous commit messages in reverse order
-	b. git log --pretty=oneline # Shows commits on one line
-	c. git log --pretty=format:"%h : %an : %ar : %s" 
-		I. %h - Abbreviated Hash  
-		II. %an - Authors Name
-		III. %ar - Date Changed
-		IV. %s - First Line of Comment
-	d. git log -p -2 # Shows the last 2 commit changes
-	e. git log --stat # Prints abbreviated stats
-	f. git log --since=1.weeks # Show only changes in the last week
-	g. git log --since="2014-04-12" # Show changes since this date
-	h. git log --author="Derek Banas" # Changes made by author
-	i. git log --before="2014-04-13" # Changes made before this date
+	- git log # Shows all of the previous commit messages in reverse order
+	- git log --pretty=oneline # Shows commits on one line
+	- git log --pretty=format:"%h : %an : %ar : %s" 
+		- %h - Abbreviated Hash  
+		- %an - Authors Name
+		- %ar - Date Changed
+		- %s - First Line of Comment
+	- git log -p -2 # Shows the last 2 commit changes
+	- git log --stat # Prints abbreviated stats
+	- git log --since=1.weeks # Show only changes in the last week
+	- git log --since="2014-04-12" # Show changes since this date
+	- git log --author="Derek Banas" # Changes made by author
+	- git log --before="2014-04-13" # Changes made before this date
 - Undoing a Commit
-	a. git commit --amend # If you want to change your previous commit
-	b. Normally done if you forgot to stage a file, or to change the commit message
+	- git commit --amend # If you want to change your previous commit
+	- Normally done if you forgot to stage a file, or to change the commit message
 - Unstage a File
-	a. git reset HEAD AndroidManifest.xml
+	- git reset HEAD AndroidManifest.xml
