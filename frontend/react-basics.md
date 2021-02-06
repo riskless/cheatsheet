@@ -41,7 +41,7 @@
 }
 ```
 
-### example (React Directly in HTML)
+### Example (React Directly in HTML)
 ```html
 <!DOCTYPE html>
 <html>
@@ -64,7 +64,7 @@
 </html>
 ```
 
-### example (React environment)
+### Example (React environment)
 ```js
 /* index.html */
 <div id="root"></div>
@@ -78,7 +78,7 @@ ReactDOM.render(
 );
 ```
 
-### example
+### Example
 ```js
 /* index.html */
 <div id="root"></div>
@@ -109,7 +109,7 @@ class App extends React.Component {
 export default App;
 ```
 
-### example (nested component)
+### Example (nested component)
 ```js
 /* index.js */
 import React from "react";
@@ -157,7 +157,7 @@ class Para extends React.Component {
 export default Para;
 ```
 
-### example (property)
+### Example (property)
 - Props are arguments passed into React components.
 - Props are passed to components via HTML attributes.
 - If you have a variable to send, and not a string as in the example above, you just put the variable name inside curly brackets
@@ -209,7 +209,7 @@ class Para extends React.Component {
 export default Para;
 ```
 
-### example (pass a property to the child component)
+### Example (pass a property to the child component)
 ```js
 /* index.js */
 import React from "react";
@@ -254,7 +254,7 @@ class Para extends React.Component {
   }
 }
 export default Para;
-
+```
 
 ### React State
 - React components has a built-in state object.
@@ -320,7 +320,7 @@ class Car extends React.Component {
 }
 ```
 
-### example (static state)
+### Example (static state)
 ```js
 /* index.js */
 import React from "react";
@@ -348,7 +348,7 @@ class App extends React.Component {
 export default App;
 ```
 
-### example (dynamic state)
+### Example (dynamic state)
 ```js
 /* index.js */
 import React from "react";
@@ -380,7 +380,7 @@ class App extends React.Component {
 export default App;
 ```
 
-### example (dynamic state)
+### Example (dynamic state)
 ```js
 /* index.js */
 import React from "react";
@@ -523,7 +523,7 @@ class Football extends React.Component {
 
 ReactDOM.render(<Football />, document.getElementById('root'));
 ```
-### example (event)
+### Example (event)
 ```js
 /* index.js */
 import React from "react";
@@ -605,40 +605,6 @@ class Display extends React.Component {
 }
 export default Display;
 ```
-
-### React Sass
-- Sass is a CSS pre-processor.
-- Sass files are executed on the server and sends CSS to the browser.
-- Use Sass
-	- npm install node-sass
-```js
-/* mysass.scss */
-$myColor: red;
-
-h1 {
-  color: $myColor;
-}
-
-/* index.js */
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './mysass.scss';
-
-class MyHeader extends React.Component {
-  render() {
-    return (
-      <div>
-      <h1>Hello Style!</h1>
-      <p>Add a little style!.</p>
-      </div>
-    );
-   
-}
-}
-
-ReactDOM.render(<MyHeader />, document.getElementById('root'));
-```
-
 ### React Forms
 - Just like in HTML, React uses forms to allow users to interact with the web page.
 - In HTML, form data is usually handled by the DOM. 
@@ -952,6 +918,37 @@ class MyForm extends React.Component {
 }
 
 ReactDOM.render(<MyForm />, document.getElementById('root'));
+```
+### React Sass
+- Sass is a CSS pre-processor.
+- Sass files are executed on the server and sends CSS to the browser.
+- Use Sass
+	- npm install node-sass
+```js
+/* mysass.scss */
+$myColor: red;
+
+h1 {
+  color: $myColor;
+}
+
+/* index.js */
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './mysass.scss';
+
+class MyHeader extends React.Component {
+  render() {
+    return (
+      <div>
+      <h1>Hello Style!</h1>
+      <p>Add a little style!.</p>
+      </div>
+    );  
+	}
+}
+
+ReactDOM.render(<MyHeader />, document.getElementById('root'));
 ```
 
 ### References
