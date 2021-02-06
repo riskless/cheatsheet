@@ -80,3 +80,43 @@
 	- Normally done if you forgot to stage a file, or to change the commit message
 - Unstage a File
 	- git reset HEAD AndroidManifest.xml
+
+### GitHub, Remote Repositories, Push, Pull, Remote, Fetch, Tagging, Aliases and Clone
+- GitHub allows you to host your code repositories online.
+- Remote repositories are normally read only, or read write only to those who are authorized 
+- You either push or pull updates from these remote repositories.
+- To push your directory to GitHub 
+	- git init
+	- git add . # Stages all new and modified files and directories
+	- git commit -m 'Initial Project Version'
+	- git remote add origin https://github.com/riskless/cheatsheet.git
+	- git push origin main
+- git remote -v # Lists all remotes and their URLs
+- git fetch origin # Gets data from the remote, but it doesn't merge changes with your work
+- git pull https://github.com/riskless/cheatsheet.git
+	- Pulls all changes and saves them to your directory
+- How to push changes to GitHub
+	- I add .gitignore for Android on my local machine
+	- In the terminal type
+		- git add .gitignore # Stage .gitignore
+		- git commit -m 'Added .gitignore for Android' # Commit
+		- git push # Push the changes to GitHub
+- git remote rename origin sf # Renames remote to sf
+- Tagging 
+	- Tags are used to tag files at important points in history
+	- git tag -a v0.1 -m 'version 0.1' # Creates an annotated tag
+	- git tag # Shows all the tags
+	- git show v0.1 # Shows details about the commit that was tagged
+	- git tag v0.4-lw 
+		- Creates a lightweight tag on a commit that stores the hash for the commit
+	- git tag -a v0.01 c930a8
+		I. You can tag commits after the event also. When you enter this command an editor opens for you to leave a comment. The final part is the hash for the commit you want to tag.
+	- git push sf v0.1 # You can also push tags
+		I. The tag shows up under releases on GitHub
+		II. git push sf --tags # You can also push all tags at once
+- You can set aliases to save time
+	- git config --global alias.co commit
+	- Now you can type git co to commit
+- Clone a GitHub Repository
+	- Go to the directory you want to use
+	- git clone https://github.com/riskless/cheatsheet.git
