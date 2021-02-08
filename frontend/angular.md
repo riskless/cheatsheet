@@ -650,3 +650,447 @@ export class AppComponent {
 	userText: string = 'Pragim';
 }
 ```
+
+### Service
+- A service in Angular is generally used when you need to reuse data or logic across multiple components.
+```js
+/* EmployeeService */
+import { Injectable } from '@angular/core';
+import { IEmployee } from './employee';
+
+// The @Injectable() decorator is used to inject other dependencies
+// into this service. As our service does not have any dependencies
+// at the moment, we may remove the @Injectable() decorator and the
+// service works exactly the same way. However, Angular recomends
+// to always use @Injectable() decorator to ensures consistency
+@Injectable()
+export class EmployeeService {
+	getEmployees(): IEmployee[] {
+		return [
+			{
+				code: 'emp101', name: 'Tom', gender: 'Male',
+				annualSalary: 5500, dateOfBirth: '6/25/1988'
+			},
+			{
+				code: 'emp102', name: 'Alex', gender: 'Male',
+				annualSalary: 5700.95, dateOfBirth: '9/6/1982'
+			}
+		];
+	}
+}
+
+/* EmployeeListComponent */
+@Component({
+	// Register EmployeeService in this component by
+	// declaring it in the providers array
+	providers: [EmployeeService]
+})
+// Make the class implement OnInit interface
+export class EmployeeListComponent implements OnInit {
+    employees: IEmployee[];
+
+    selectedEmployeeCountRadioButton: string = 'All';
+
+    // Inject EmployeeService using the constructor
+    // The private variable _employeeService which points to
+    // EmployeeService singelton instance is then available
+    // throughout this class
+    constructor(private _employeeService: EmployeeService) {
+    }
+
+    // In ngOnInit() life cycle hook call the getEmployees()
+    // service method of EmployeeService using the private
+    // variable _employeeService
+    ngOnInit() {
+        this.employees = this._employeeService.getEmployees();
+    }
+
+    getTotalEmployeesCount(): number {
+        return this.employees.length;
+    }
+
+    getTotalMaleEmployeesCount(): number {
+        return this.employees.filter(e => e.gender === 'Male').length;
+    }
+
+    getTotalFemaleEmployeesCount(): number {
+        return this.employees.filter(e => e.gender === 'Female').length;
+    }
+
+    onEmployeeCountRadioButtonChange(selectedRadioButtonValue: string): void {
+        this.selectedEmployeeCountRadioButton = selectedRadioButtonValue;
+    }
+}
+```
+
+### http service
+```js
+/* */
+import { HttpModule } from '@angular/http';
+
+@NgModule({
+	imports: [HttpModule],
+	declarations: [],
+	bootstrap: [AppComponent]
+})
+
+export class AppModule { }
+
+/* EmployeeService */
+@Injectable()
+export class EmployeeService {
+
+	// Inject Angular http service
+	constructor(private _http: Http) { }
+
+	// Notice the method return type is Observable<IEmployee[]>
+	getEmployees(): Observable<IEmployee[]> {
+		// To convert Observable<Response> to Observable<IEmployee[]>
+		// we are using the map operator
+		return this._http.get('http://localhost:24535/api/employees')
+			.map((response: Response) => <IEmployee[]>response.json());
+	}
+}
+
+/* employeeList.component.ts */
+ngOnInit() {
+	this._employeeService.getEmployees()
+		.subscribe(employeesData => this.employees = employeesData);
+}
+
+```
+- What is an Observable 
+	- Observable is an asynchronous pattern. In the Observable pattern we have an Observable and an Observer. Observer observes the Observable. In many implementations an Observer is also called as a Subscriber.
+	- An Observable can have many Observers (also called Subscribers).
+	- Observable emits items or notifications over time to which an Observer (also called Subscriber) can subscribe.
+	- When a subscriber subscribes to an Observable, the subscriber also specifies a callback function.
+	- This subscriber callback function is notified as and when the Observable emits items or notifications.
+	- Within this callback function we write code to handle data itmes or notifications received from the Observable.
+	- 3 callback functions 
+		- onNext: The Observable calls this method whenever the Observable emits an item. The emitted item is passed as a parameter to this method
+		- onError: The Observable calls this method if there is an error
+		- onCompleted: The Observable calls this method after it has emitted all items, i.e after it has called onNext for the final time
+
+### http error handling
+```js
+/* EmployeeService  */
+getEmployees(): Observable<IEmployee[]> {
+	return this._http.get('http://localhost:24535/api/employees')
+		.map((response: Response) => <IEmployee[]>response.json())
+		.catch(this.handleError);
+}
+
+handleError(error: Response) {
+	console.error(error);
+	return Observable.throw(error);
+}
+
+/* EmployeeListComponent */
+ngOnInit() {
+	// The second arrow function sets the statusMessage property
+	// to a meaningful message that can be displayed to the user
+	this._employeeService.getEmployees()
+		.subscribe(
+			employeesData => this.employees = employeesData,
+			error => {this.statusMessage = 'Problem with the service. Please try again after sometime';}
+		);
+}
+```
+
+### routing
+```js
+/* AppModule */
+import { RouterModule, Routes } from '@angular/router';
+
+// Routes is an array of Route objects
+// Each route maps a URL path to a component
+// The 3rd route specifies the route to redirect to if the path
+// is empty. In our case we are redirecting to /home
+// The 4th route (**) is the wildcard route. This route is used
+// if the requested URL doesn't match any other routes already defined
+const appRoutes: Routes = [
+	{ path: 'home', component: HomeComponent },
+	{ path: 'employees', component: EmployeeListComponent },
+	{ path: '', redirectTo: '/home', pathMatch: 'full' },
+	{ path: '**', component: PageNotFoundComponent }
+];
+
+// To let the router know about the routes defined above,
+// pass "appRoutes" constant to forRoot(appRoutes) method
+@NgModule({
+	imports: [
+		BrowserModule, FormsModule, HttpModule,
+		RouterModule.forRoot(appRoutes)
+	],
+	declarations: [AppComponent, HomeComponent],
+	bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+/* html */
+//The routerLink directive tells the router where to navigate when the user clicks the link.
+//The routerLinkActive directive is used to add the active bootstrap class to the HTML navigation element whose route matches the active route.
+//The router-outlet directive is used to specify the location where we want the routed component's view template to be displayed.
+<div style="padding:5px">
+	<ul class="nav nav-tabs">
+		<li routerLinkActive="active">
+			<a routerLink="home">Home</a>
+		</li>
+		<li routerLinkActive="active">
+			<a routerLink="employees">Employees</a>
+		</li>
+	</ul>
+	<br/>
+	<router-outlet></router-outlet>
+</div>
+```
+
+### route parameters
+```js
+/* AppModule */
+const appRoutes: Routes = [
+	{ path: 'employees/:code', component: EmployeeComponent }
+];
+
+/* html */
+<a [routerLink]="['/employees',employee.code]">
+	{{employee.code | uppercase}}
+</a>
+
+/* EmployeeService */
+getEmployeeByCode(empCode: string): Observable<IEmployee> {
+	return this._http.get("http://localhost:31324/api/employees/" + empCode)
+		.map((response: Response) => <IEmployee>response.json())
+		.catch(this.handleError);
+}
+/* EmployeeComponent */
+ngOnInit() {
+	let empCode: string = this._activatedRoute.snapshot.params['code'];
+	this._employeeService.getEmployeeByCode(empCode).subscribe(
+		(employeeData) => {
+			if (employeeData == null) {
+				this.statusMessage = 'Employee with the specified Employee Code does not exist';
+			}
+			else {
+				this.employee = employeeData;
+			}
+		},
+		(error) => {
+			this.statusMessage = 'Problem with the service. Please try again after sometime';
+			console.error(error);
+		});
+}
+
+```
+
+
+### router navigate method
+```js
+/* html */
+<input type="button" class="btn btn-primary" value="Back to Employees List" (click)="onBackButtonClick()"/>
+
+/* component */
+// import { Router } from '@angular/router';
+constructor(private _router: Router) {}
+
+onBackButtonClick() :void {
+	this._router.navigate(['/employees']);
+}
+```
+
+### Promises
+```js
+/* service */
+@Injectable()
+export class EmployeeService {
+	constructor(private _http: Http) { }
+
+	getEmployees(): Observable<IEmployee[]> {
+		return this._http.get('http://localhost:24535/api/employees')
+			.map((response: Response) => <IEmployee[]>response.json())
+			.catch(this.handleError);
+	}
+
+	// Notice we changed the return type of the method to Promise<IEmployee>
+	// from Observable<IEmployee>. We are using toPromise() operator to
+	// return a Promise. When an exception is thrown handlePromiseError()
+	// logs the error to the console and throws the exception again
+	getEmployeeByCode(empCode: string): Promise<IEmployee> {
+		return this._http.get("http://localhost:24535/api/employees/" + empCode)
+			.map((response: Response) => <IEmployee>response.json())
+			.toPromise()
+			.catch(this.handlePromiseError);
+	}
+
+	// This method is introduced to handle exceptions
+	handlePromiseError(error: Response) {
+		console.error(error);
+		throw (error);
+	}
+
+	handleError(error: Response) {
+		console.error(error);
+		return Observable.throw(error);
+	}
+}
+
+/* component */
+ngOnInit() {
+	let empCode: string = this._activatedRoute.snapshot.params['code'];
+	// The only change that we need to make here is use
+	// then() method instead of subscribe() method
+	this._employeeService.getEmployeeByCode(empCode).then(
+		(employeeData) => {
+			if (employeeData == null) {
+				this.statusMessage = 'Employee with the specified Employee Code does not exist';
+			} else {
+				this.employee = employeeData;
+			}
+		},
+		(error) => {
+			this.statusMessage = 'Problem with the service. Please try again after sometime';
+			console.error(error);
+		});
+}
+```
+- Promises
+	- Emits a single value
+	- Not Lazy
+	- Cannot be cancelled
+- Observable
+Promise	
+	- Emits multiple values over a period of time
+	- Lazy. An Observable is not called until we subscribe to the Observable
+	- Can be cancelled using the unsubscribe() method
+	- Observable provides operators like map, forEach, filter, reduce, retry, retryWhen etc.
+
+- Observable retry on error
+```js
+/* component */
+ngOnInit() {
+let empCode: string = this._activatedRoute.snapshot.params['code'];
+
+this._employeeService.getEmployeeByCode(empCode)
+	// Chain the retry operator to retry on error.
+	//.retry()
+
+	// Retry only 3 times if there is an error
+	//.retry(3)
+
+	// Retry with a delay of 1000 milliseconds (i.e 1 second)
+	.retryWhen((err) => err.delay(1000))
+
+	// The delay operator will not work with retry
+	//.retry().delay(5000)
+	.subscribe(
+		(employeeData) => {
+			if (employeeData == null) {
+				this.statusMessage = 'Employee with the specified Employee Code does not exist';
+			} else {
+				this.employee = employeeData;
+			}
+		},
+		(error) => {
+			this.statusMessage ='Problem with the service. Please try again after sometime';
+			console.error(error);
+	});
+}
+
+/* If you want to retry every 1000 milli-seconds only for a miximum of 5 times */
+ngOnInit() {
+	let empCode: string = this._activatedRoute.snapshot.params['code'];
+
+	this._employeeService.getEmployeeByCode(empCode)
+		// Retry 5 times maximum with a delay of 1 second
+		// between each retry attempt
+		.retryWhen(
+			(err) => {
+				return err.scan(
+					(retryCount, val) => {
+						retryCount += 1;
+						if (retryCount < 6) {
+							this.statusMessage = 'Retrying...Attempt #' + retryCount;
+							return retryCount;
+						} else {
+							throw (err);
+						}
+					}, 0).delay(1000)
+			}
+		)
+		.subscribe(
+			(employeeData) => {
+				if (employeeData == null) {
+					this.statusMessage = 'Employee with the specified Employee Code does not exist';
+				}	else {
+					this.employee = employeeData;
+				}
+			},
+			(error) => {
+				this.statusMessage = 'Problem with the service. Please try again after sometime';
+				console.error(error);
+			}
+		);
+}
+
+```
+
+### observable unsubscribe
+```js
+/* html */
+<div style="margin-top:5px" *ngIf="!subscription.closed">
+	<input type="button" class="btn btn-primary" value="Cancel Request" (click)="onCancelButtonClick()" />
+</div>
+
+/* component */
+// Create a class property of type ISubscription
+// The ISubscription interface has closed property
+// The ngIf directive in the HTML binds to this property
+// Go to the difinition of ISubscription interface to
+// see the closed property
+subscription: ISubscription;
+
+ngOnInit() {
+	let empCode: string = this._activatedRoute.snapshot.params['code'];
+
+	// Use the subscription property created above to hold on to the
+	// subscription.We use this object in the onCancelButtonClick()
+	// method to unsubscribe and cancel the request
+	this.subscription = this._employeeService.getEmployeeByCode(empCode)
+			.retryWhen((err) => {
+					return err.scan((retryCount, val) => {
+							retryCount += 1;
+							if (retryCount < 4) {
+									this.statusMessage = 'Retrying...Attempt #' + retryCount;
+									return retryCount;
+							}
+							else {
+									throw (err);
+							}
+					}, 0).delay(1000)
+			})
+			.subscribe((employeeData) => {
+					if (employeeData == null) {
+							this.statusMessage =
+									'Employee with the specified Employee Code does not exist';
+					}
+					else {
+							this.employee = employeeData;
+					}
+			},
+			(error) => {
+					this.statusMessage =
+							'Problem with the service. Please try again after sometime';
+					console.error(error);
+		});
+}
+
+// This method is bound to the click event of the "Cancel Request" button
+// Notice we are using the unsubscribe() method of the subscription object
+// to unsubscribe from the observable to cancel the request. We are also
+// setting the status message property of the class to "Request Cancelled"
+// This message is displayed to the user to indicate that the request is cancelled
+onCancelButtonClick(): void {
+		this.statusMessage = 'Request cancelled';
+		this.subscription.unsubscribe();
+}
+```
