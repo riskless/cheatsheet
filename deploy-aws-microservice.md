@@ -25,16 +25,17 @@
 	- docker ps -a
 	- docker start <container_id>
 	- Edit inbound rules
-| Type				| Protocol  | Port range  | Source     | Description - optional |
+	
+| Type		| Protocol  | Port range  | Source     | Description - optional |
 | -----------	| ----------| ------------| ---------  | ---------------------- |
-| SSH					| TCP				| 22  			  | 0.0.0.0/0  |                        |
-| Custom TCP	| TCP				| 4369			  | 0.0.0.0/0  | RabbitMQ port          |
-| Custom TCP	| TCP				| 4369			  | ::/0       | RabbitMQ port          |
-| Custom TCP	| TCP				| 5672			  | 0.0.0.0/0  | RabbitMQ port          |
-| Custom TCP	| TCP				| 5672			  | ::/0       | RabbitMQ port          |
-| Custom TCP  | TCP				| 15672			  | 0.0.0.0/0  | RabbitMQ port          |
-| Custom TCP	| TCP				| 15672			  | ::/0       | RabbitMQ port          |
-| Custom TCP	| TCP				| 5671			  | 0.0.0.0/0  | RabbitMQ port          |
-| Custom TCP	| TCP				| 5671			  | ::/0       | RabbitMQ port          |
-| Custom TCP  | TCP				| 15671			  | 0.0.0.0/0  | RabbitMQ port          |
-| Custom TCP	| TCP				| 15671			  | ::/0       | RabbitMQ port          |
+| SSH		| TCP  	    | 22          | 0.0.0.0/0  |                        |
+| Custom TCP	| TCP	    | 4369        | 0.0.0.0/0  | RabbitMQ port          |
+| Custom TCP	| TCP	    | 4369        | ::/0       | RabbitMQ port          |
+| Custom TCP	| TCP	    | 5672        | 0.0.0.0/0  | RabbitMQ port          |
+| Custom TCP	| TCP	    | 5672        | ::/0       | RabbitMQ port          |
+| Custom TCP    | TCP       | 15672       | 0.0.0.0/0  | RabbitMQ port          |
+| Custom TCP	| TCP	    | 15672       | ::/0       | RabbitMQ port          |
+| Custom TCP	| TCP	    | 5671        | 0.0.0.0/0  | RabbitMQ port          |
+| Custom TCP	| TCP	    | 5671        | ::/0       | RabbitMQ port          |
+| Custom TCP    | TCP       | 15671       | 0.0.0.0/0  | RabbitMQ port          |
+| Custom TCP	| TCP	    | 15671       | ::/0       | RabbitMQ port          |
