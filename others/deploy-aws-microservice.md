@@ -76,8 +76,9 @@ ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","ConfigServe
 	- docker logs <container_id>
 	- Edit inbound rules
 		- EC2 Private IP: 172.31.10.143 => 172.31.0.0/24
+		
 | Type		| Protocol  	| Port range  	| Source     | Description - optional |
-| -----------	| ----------	| ------------	| ---------  | ---------------------- |
+| --------------| --------------|---------------| -----------| ---------------------- |
 | Custom TCP  	| TCP 		| 8012		| Private IP | Config Server          |
 | Custom TCP	| TCP		| 8012		| My IP      | Config Server          |
 
