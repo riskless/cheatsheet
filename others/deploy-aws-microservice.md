@@ -40,8 +40,8 @@
 | Custom TCP    | TCP       | 15671       | 0.0.0.0/0  | RabbitMQ port          |
 | Custom TCP	| TCP	    | 15671       | ::/0       | RabbitMQ port          |
 
+	- test
+		- ec2-13-236-191-96.ap-southeast-2.compute.amazonaws.com:15672 (guest/guest)
 - Run RabbitMQ Docker Container
 	- docker run -d --name rabbit-name-management -p 15672:15672 -p 5672:5672 -p 15671:15671 -p 5671:5671 -p 4369:4369 rabbitmq:3-management
 	- docker ps
-	- test
-		- ec2-13-236-191-96.ap-southeast-2.compute.amazonaws.com:15672 (guest/guest)
