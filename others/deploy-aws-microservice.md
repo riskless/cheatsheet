@@ -39,3 +39,6 @@
 | Custom TCP	| TCP	    | 5671        | ::/0       | RabbitMQ port          |
 | Custom TCP    | TCP       | 15671       | 0.0.0.0/0  | RabbitMQ port          |
 | Custom TCP	| TCP	    | 15671       | ::/0       | RabbitMQ port          |
+
+	- test
+		- ec2-13-236-191-96.ap-southeast-2.compute.amazonaws.com:15672 (guest/guest)
