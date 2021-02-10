@@ -41,3 +41,5 @@
 | Custom TCP	| TCP	    | 15671       | ::/0       | RabbitMQ port          |
 
 	- test: ec2-13-236-191-96.ap-southeast-2.compute.amazonaws.com:15672 (guest/guest)
+- To run RabbitMQ and change Default user name and password:
+	- docker run -d --name rabbit-name-management -p 15672:15672 -p 5672:5672 -p 5671:5671 -e RABBITMQ_DEFAULT_USER=user -e RABBITMQ_DEFAULT_PASS=password rabbitmq:3-management
