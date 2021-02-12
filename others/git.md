@@ -210,5 +210,6 @@
 	- git reset --hard # Undoes changes on all tracked files
 	
 ### References
+- [GIT CHEAT SHEET](https://education.github.com/git-cheat-sheet-education.pdf)
 - [Git Video Tutorial](https://www.youtube.com/watch?v=r63f51ce84A)
 - [Git MERGE vs REBASE](https://www.youtube.com/watch?v=CRlGDDprdOQ)
