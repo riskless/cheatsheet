@@ -6,6 +6,7 @@
 - Development environment
 	- TypeScript, lite-server, VSCode
 - User Interface
+
 ![User Interface](images/ts-practice-01.png)
 
 ### Set up development environment
@@ -25,4 +26,7 @@
 	"outDir": "./dist"
 }
 ```
+
+### References
+- [Understanding TypeScript](https://www.eduonix.com/understanding-typescript)
 
