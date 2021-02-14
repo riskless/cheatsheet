@@ -985,6 +985,181 @@ export function autobind(_: any, _2: string, descriptor: PropertyDescriptor) {}
 }
 
 ```
+
+### TypeScript & Webpack
+- setup development environment
+	- npm install --save-dev webpack webpack-cli webpack-dev-server typescript ts-loader 
+	- npm run start
+```js
+/* webpack.config.js */
+const path = require('path');
+
+module.exports = {
+  mode: 'development',
+  entry: './src/app.ts',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: 'dist'
+  },
+  devtool: 'inline-source-map',
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
+  }
+};
+
+/* package.json */
+"scripts": {
+	"start": "webpack-dev-server",
+	"build": "webpack"
+}
+
+/* index.html */
+<script type="module" src="dist/bundle.js"></script>
+```
+- setup production environment
+	- npm install --sava-dev clean-webpack-plugin
+	- npm run start
+	- npm run build
+```js
+/* webpack.config.prod.js */
+const path = require('path');
+const CleanPlugin = require('clean-webpack-plugin');
+
+module.exports = {
+  mode: 'production',
+  entry: './src/app.ts',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  },
+  devtool: 'none',
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js']
+  },
+  plugins: [
+    new CleanPlugin.CleanWebpackPlugin()
+  ]
+};
+
+/* package.json */
+"scripts": {
+	"start": "webpack-dev-server",
+	"build": ""webpack --config webpack.config.prod.js"
+}
+```
+
+### Using 3rd-party Libraries
+- Using vanila JavaScript libraries
+	- npm install --sava lodash
+	- npm install --save-dev @types/lodash // TypeScript translation
+- TypeScript-embracing: class-validator
+```js
+/* package.json */
+"devDependencies": {
+	"@types/googlemaps": "^3.38.0",
+	"ts-loader": "^6.2.1",
+	"typescript": "^3.7.2",
+	"webpack": "^4.41.2",
+	"webpack-cli": "^3.3.10",
+	"webpack-dev-server": "^3.9.0"
+},
+"dependencies": {
+	"axios": "^0.19.0"
+}
+
+/* app.ts */
+import axios from "axios";
+
+const form = document.querySelector("form")!;
+const addressInput = document.getElementById("address")! as HTMLInputElement;
+
+const GOOGLE_API_KEY = "AIzaSyCIaAc2c5M3VpbCH6PPq_guwy9lHuowXOs";
+
+// declare var google: any;
+
+type GoogleGeocodingResponse = {
+  results: { geometry: { location: { lat: number; lng: number } } }[];
+  status: "OK" | "ZERO_RESULTS";
+};
+
+function searchAddressHandler(event: Event) {
+  event.preventDefault();
+  const enteredAddress = addressInput.value;
+
+  axios
+    .get<GoogleGeocodingResponse>(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(
+        enteredAddress
+      )}&key=${GOOGLE_API_KEY}`
+    )
+    .then(response => {
+      if (response.data.status !== "OK") {
+        throw new Error("Could not fetch location!");
+      }
+      const coordinates = response.data.results[0].geometry.location;
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: coordinates,
+        zoom: 16
+      }); 
+
+      new google.maps.Marker({ position: coordinates, map: map });
+    })
+    .catch(err => {
+      alert(err.message);
+      console.log(err);
+    });
+}
+
+form.addEventListener("submit", searchAddressHandler);
+
+/* index.html */
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Understanding TypeScript</title>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCIaAc2c5M3VpbCH6PPq_guwy9lHuowXOs"
+      async
+      defer
+    ></script>
+    <script src="dist/bundle.js" defer></script>
+    <link rel="stylesheet" href="app.css" />
+  </head>
+  <body>
+    <div id="map">
+      <p>Please enter an address!</p>
+    </div>
+    <form>
+      <input type="text" id="address" />
+      <button type="submit">SEARCH ADDRESS</button>
+    </form>
+  </body>
+</html>
+
+```
+
 ### References
 - [Understanding TypeScript](https://www.eduonix.com/understanding-typescript)
 
