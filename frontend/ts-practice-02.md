@@ -6,6 +6,7 @@
 - Development environment
 	- TypeScript, React, VSCode
 - User Interface
+
 ![User Interface](images/ts-todo.png)
 
 ### Set up development environment
