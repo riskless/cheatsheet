@@ -64,7 +64,55 @@
 	- where: -v <directory on HOST machine>:<directory in Docker container>
 - Make Docker Container use Host Network and Avoid Port Binding
 	- docker run <IMAGE ID> --network host
+### Dockerize Spring Boot App using Maven Plugin 
+```java
+/* pom.xml */
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.3</version>
+				<executions>
+					<execution>
+						<id>default</id>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<repository>repostiory-name/image-name</repository>
+					<tag>${project.version}</tag>
+				</configuration>
+				<dependencies>
+					<!-- To make this work on JDK 9+ -->
+					<dependency>
+						<groupId>javax.activation</groupId>
+						<artifactId>javax.activation-api</artifactId>
+						<version>1.2.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+		</plugins>
+</build>
+
+/* Dockerfile */
+FROM openjdk:11
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+/* maven command */
+mvn clean package dockerfile:push
+```
 ### References
 - [Docker Commands Cheat Sheet](http://appsdeveloperblog.com/docker-commands-cheat-sheet/)
 - [Docker Tutorial for Beginners](https://www.youtube.com/watch?v=3c-iBn73dDE)
