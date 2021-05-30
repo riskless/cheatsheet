@@ -9,7 +9,6 @@ INNER JOIN salesman b
 ON a.salesman_id=b.salesman_id;
 ```
 
-- https://www.w3resource.com/sql-exercises/sql-joins-exercise-3.php
 ### Prepare a list with order no, purchase amount, customer name and their cities for those orders which order amount between 500 and 2000
 - orders: ord_no, purch_amt, ord_date, customer_id, salesman_id
 - customer: customer_id, cust_name, city, grade, salesman_id 
