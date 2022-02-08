@@ -1,4 +1,5 @@
 ### Build a Gmail Clone with Vue 3
+- Adding dynamic classes and click events
 - Flexible Events
   - Got a useful pattern for communicating requests from a child component to a parent component.
 - Multi-select with Reactive Sets
@@ -6,3 +7,5 @@
 - App-wide Non-persisted State
   - Storing non-persisted app-wide state
 - "Select All" Checkbox
+- Bulk Actions
+- Archived View
