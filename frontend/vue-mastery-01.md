@@ -1,5 +1,8 @@
 ### Build a Gmail Clone with Vue 3
 - Adding dynamic classes and click events
+- Email Modal
+- Keyboard Shortcuts
+- Build a Composable (useKeydown)
 - Flexible Events
   - Got a useful pattern for communicating requests from a child component to a parent component.
 - Multi-select with Reactive Sets
