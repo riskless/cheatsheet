@@ -1,4 +1,6 @@
 ### Useful commands
+- Rename the local branch to the new name
+	- git branch -m <old_name> <new_name>
 - delete branch
 	- git branch -D <local_branch_name>
 	- git push origin --delete <remote_branch_name>
