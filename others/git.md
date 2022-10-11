@@ -6,7 +6,7 @@
 	- to clean up your references to deleted remote branches
 	- git remote prune origin
 - How to undo the last commit from a remote git repository
-	- [Cancel COMMIT]([https://www.youtube.com/watch?v=r63f51ce84A](https://melvingeorge.me/blog/undo-last-commit-in-remote-git-repo))
+	- [Cancel COMMIT](https://melvingeorge.me/blog/undo-last-commit-in-remote-git-repo)
 
 ### ABOUT GIT
 - Git is a version control tool that saves changes to groups of files so you can revert back if needed.
