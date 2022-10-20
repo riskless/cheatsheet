@@ -1,4 +1,7 @@
 ### Useful commands
+- Changing commit comment
+	- (local) git commit --amend -m "changed message"
+	- (remote) git push --force <repository> <branch> ex) git push origin develop --force
 - Rename the local branch to the new name
 	- git branch -m <old_name> <new_name>
 - delete branch
