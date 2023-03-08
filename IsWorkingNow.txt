@@ -1,6 +1,7 @@
 ### javascript proxy object
 * How to use Proxy Objects - JavaScript Tutorial
 https://www.youtube.com/watch?v=hI4AyjNnUzQ
+https://www.youtube.com/watch?v=hI4AyjNnUzQ&list=PLw5h0DiJ-9PDAQSugtq6s_Iy3dRrN6w_v
 
 * dddd
 dddd
