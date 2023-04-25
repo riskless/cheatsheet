@@ -1,1 +1,18 @@
-dddddddddd
+### Intro To JavaScript Unit Testing & BDD
+https://www.youtube.com/watch?v=u5cLK1UrFyQ&t=334s
+
+### javascript proxy object
+* How to use Proxy Objects - JavaScript Tutorial
+https://www.youtube.com/watch?v=hI4AyjNnUzQ
+https://www.youtube.com/watch?v=hI4AyjNnUzQ&list=PLw5h0DiJ-9PDAQSugtq6s_Iy3dRrN6w_v
+
+* Typescript
+https://www.youtube.com/watch?v=Jt88cp-QMjI&list=PL0iFifR5umcnAbG8YDTkHrTv7aSNX3sOT (from Australia)
+
+### others
+* Test Driven Development vs Behavior Driven Development
+https://www.youtube.com/watch?v=Bq_oz7nCNUA
+
+### References
+- [JavaScript Tutorial (Derek)](https://www.youtube.com/watch?v=fju9ii8YsGs&list=PLGLfVvz_LVvSX7fVd4OUFp_ODd86H0ZIY&index=27)
+- [JAVASCRIPT Online Training (Harsha)](https://www.youtube.com/watch?v=dQlTVyrkduo&list=PLd3UqWTnYXOnN6jwdv8b2PmG46fkhcsTQ&index=1)
